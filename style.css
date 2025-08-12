@@ -1,155 +1,104 @@
-/* Luxurious Theme Styles - style_luxury.css */
+/* Refined Elegant Theme
+   Light: Versailles-inspired (ivory, gold, royal blue accents)
+   Dark: Dracula/Victorian-steampunk (aubergine, oxblood, brass)
+   Fonts: Bourgeoisie feel via Playfair Display + Libre Baskerville
+*/
+
+/* Optional Google Fonts import (remove if managed in HTML) */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Playfair+Display:wght@600;700&display=swap');
 
 :root {
-  --primary: #000000;
-  --secondary: #ffffff;
-  --accent: #FFD700;    /* Shiny gold */
-  --tertiary: #1a001a;  /* Dark rich purple */
+  /* LIGHT (Versailles) */
+  --bg: #f9f7f1;             /* ivory parchment */
+  --fg: #1e2230;             /* refined ink */
+  --muted: #5b6275;          /* soft slate */
+  --surface: #ffffff;        /* card */
+  --border: #e8e2d6;         /* bone */
+  --accent: #113a8f;         /* royal blue */
+  --accent-2: #c4a64f;       /* antique gold */
+  --shadow: 0 6px 20px rgba(20, 22, 30, 0.06);
 }
 
-body.light-mode {
-  --primary: #ffffff;
-  --secondary: #000000;
-  --accent: #c9a600;    /* Gold variation for light mode */
-  --tertiary: #2e0032;  /* Slightly lighter purple */
-  background-color: var(--primary);
-  color: var(--secondary);
+.theme-dark {
+  /* DARK (Dracula/Victorian steampunk) */
+  --bg: #0f0c13;             /* crypt */
+  --fg: #e7e2db;             /* vellum */
+  --muted: #a99f95;          /* tarnished parchment */
+  --surface: #161219;        /* velvet */
+  --border: #2b2531;         /* iron */
+  --accent: #b6464c;         /* oxblood */
+  --accent-2: #b28d52;       /* brass */
+  --shadow: 0 8px 24px rgba(0,0,0,0.35);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  scroll-behavior: smooth;
-}
-
+/* Base */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
 body {
-  font-family: 'Roboto', sans-serif;
-  background-color: var(--primary);
-  color: var(--secondary);
-  line-height: 1.6;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Libre Baskerville", Georgia, serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-header {
-  text-align: center;
-  padding: 4rem 1rem;
-  background: linear-gradient(to right, #1a001a, #000000);
-  border-bottom: 2px solid var(--accent);
-}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-header h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
-  color: var(--accent);
-  text-shadow: 0 0 10px var(--accent);
-  background: linear-gradient(90deg, var(--accent), #fff7b3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 2s infinite linear;
-}
+.container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+header { padding: 32px 20px 16px; }
+h1, h2, h3 { font-family: "Playfair Display", "Libre Baskerville", Georgia, serif; letter-spacing: .2px; }
+h1 { font-size: 2.25rem; margin: 0; }
+.subtitle { color: var(--muted); margin-top: 6px; font-size: 1.05rem; }
 
-@keyframes shimmer {
-  0% {
-    background-position: -500px 0;
-  }
-  100% {
-    background-position: 500px 0;
-  }
-}
+/* Accent rule */
+.rule { height: 4px; width: 100%; background: linear-gradient(90deg, var(--accent-2), transparent); border-radius: 2px; margin: 14px 0 10px; }
 
-header p {
-  font-size: 1.2rem;
-  margin-top: 0.5rem;
-  color: var(--secondary);
-}
+/* Cards / Sections */
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; margin: 14px 0; }
+.section h2 { font-size: 1.2rem; color: var(--accent); margin: 0 0 8px; }
+.meta { color: var(--muted); font-size: .95rem; }
+ul { margin: 6px 0 6px 1.1rem; padding: 0; }
+li { margin: 2px 0; }
 
-section {
-  padding: 3rem 1rem;
-  max-width: 900px;
-  margin: auto;
-}
+/* Pills & badges */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.pill { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--accent); font-size: .85rem; }
 
-h2 {
-  font-size: 2rem;
-  color: var(--accent);
-  margin-bottom: 1rem;
-  font-family: 'Playfair Display', serif;
-  text-shadow: 0 0 8px var(--accent);
-}
+/* Grid */
+.grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 820px) { .grid { grid-template-columns: 2fr 1fr; } }
 
-.about p {
-  font-size: 1.1rem;
-}
+/* Footer */
+footer { color: var(--muted); font-size: .95rem; text-align: center; padding: 28px 20px 40px; }
 
-.projects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-}
-
-.project {
-  background: #111;
-  border: 2px solid var(--tertiary);
-  border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 0 10px var(--tertiary);
-}
-
-.project h3 {
-  color: var(--accent);
-  margin-bottom: 0.5rem;
-  text-shadow: 0 0 6px var(--accent);
-}
-
-footer {
-  text-align: center;
-  padding: 2rem 1rem;
-  border-top: 1px solid var(--tertiary);
-  font-size: 0.9rem;
-  background: #000;
-}
-
-a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--tertiary);
-  box-shadow: 0 0 10px var(--accent);
-}
-
-/* Animation */
-.fade-in {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 1s ease-out, transform 1s ease-out;
-}
-
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Theme Toggle Button */
+/* Button: Light/Dark toggle */
 #theme-toggle {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-  font-size: 1.2rem;
-  padding: 0.5rem;
-  color: var(--accent);
-  background-color: var(--primary);
+  right: 16px;
+  top: 16px;
+  height: 40px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
   cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform .08s ease, background .2s ease, color .2s ease;
   z-index: 1000;
-  transition: box-shadow 0.3s ease;
+}
+#theme-toggle:hover { transform: translateY(-1px); }
+#theme-toggle .dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent-2), transparent 75%);
 }
 
-#theme-toggle:hover {
-  background-color: var(--tertiary);
-  color: var(--secondary);
-  box-shadow: 0 0 15px var(--accent);
-}
+/* Fade-in animation */
+.fade-in { opacity: 0; transform: translateY(8px); transition: opacity .6s ease, transform .6s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
