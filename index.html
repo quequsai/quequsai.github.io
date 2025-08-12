@@ -6,63 +6,8 @@
   <meta name="description" content="Portfolio & resume of Qusai Quresh — New‑Grad IT candidate focused on user support, requirements, ad‑hoc reporting, and analytics." />
   <title>Qusai Quresh | Resume & Portfolio</title>
 
-  <!-- Primary theme (burgundy to match resume) -->
-  <style>
-    :root {
-      --bg: #ffffff;
-      --fg: #0f172a;
-      --muted: #475569;
-      --card: #ffffff;
-      --accent: #7e2430; /* burgundy */
-      --accent-weak: #f6eaec;
-      --border: #e2e8f0;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0b0d10;
-        --fg: #e5e7eb;
-        --muted: #94a3b8;
-        --card: #101418;
-        --accent: #cd4b5d;
-        --accent-weak: #2a0f14;
-        --border: #1f2937;
-      }
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    header, main, footer { max-width: 980px; margin: 0 auto; padding: 16px; }
-    header { padding-top: 28px; padding-bottom: 8px; }
-    .title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
-    .title h1 { font-size: 2rem; margin: 0; letter-spacing: 0.2px; }
-    .title .tagline { color: var(--muted); font-size: 1rem; }
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--accent-weak); color: var(--accent); font-size: 0.85rem; margin-right: 8px; }
-    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 820px) { .grid { grid-template-columns: 2fr 1fr; gap: 22px; } }
-    section.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
-    h2 { font-size: 1.15rem; margin: 0 0 8px 0; letter-spacing: 0.3px; color: var(--accent); }
-    h3 { margin: 6px 0; font-size: 1rem; }
-    .meta { color: var(--muted); font-size: 0.92rem; }
-    ul { margin: 0.25rem 0 0.5rem 1.1rem; }
-    li { margin: 2px 0; }
-    .list-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-    .pill { border: 1px solid var(--border); background: var(--bg); border-radius: 999px; padding: 2px 10px; font-size: 0.85rem; }
-    .contact-list { list-style: none; padding: 0; margin: 4px 0; }
-    .contact-list li { margin: 2px 0; }
-    .footer { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 24px 16px 40px; }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-    .qr { font-size: 0.9rem; color: var(--muted); }
-    .accent-bar { height: 4px; width: 100%; background: linear-gradient(90deg, var(--accent), transparent); border-radius: 2px; margin-top: 12px; }
-  </style>
-
-  <!-- Hidden ATS/AI keywords (accessible but visually hidden) -->
-  <div class="sr-only">
-    Information Technology, IT Support, Service Desk, ServiceNow, Requirements Gathering, Documentation,
-    Ad-hoc Reporting, Excel, Power Query, Power BI, SQL, Python, Data Analysis, Troubleshooting,
-    Benchmarking, KPI Reporting, Data Governance, Cyber Security, Enterprise Data, Stakeholder Communication,
-    Calgary, Lethbridge, Alberta, New Grad Program, Rotational Program, June 2026, Computer Science.
-  </div>
+  <!-- Elegant Versailles/Dracula theme -->
+  <link rel="stylesheet" href="style_elegant.css">
 
   <!-- JSON-LD for rich previews -->
   <script type="application/ld+json">
@@ -86,13 +31,17 @@
 </head>
 <body>
 
-<header>
+<!-- Theme toggle (JS expects this id) -->
+<button id="theme-toggle" aria-label="Toggle theme">🌙 Dark <span class="dot"></span></button>
+
+<header class="container fade-in">
+  <span class="brand-monogram">QQ</span>
   <div class="title">
     <h1>Qusai Quresh</h1>
-    <span class="tagline">New‑Grad IT Candidate — User Support · Requirements · Ad‑hoc Reporting · Analytics</span>
+    <span class="subtitle">New‑Grad IT Candidate — User Support · Requirements · Ad‑hoc Reporting · Analytics</span>
   </div>
-  <div class="accent-bar"></div>
-  <div class="list-pills">
+  <div class="rule"></div>
+  <div class="pills">
     <span class="pill">ServiceNow</span>
     <span class="pill">Excel / Power Query</span>
     <span class="pill">SQL</span>
@@ -102,10 +51,17 @@
   </div>
 </header>
 
-<main class="grid">
-  <!-- Left Column -->
+<!-- Hidden ATS/AI keywords (accessible but visually hidden) -->
+<div class="sr-only">
+  Information Technology, IT Support, Service Desk, ServiceNow, Requirements Gathering, Documentation,
+  Ad-hoc Reporting, Excel, Power Query, Power BI, SQL, Python, Data Analysis, Troubleshooting,
+  Benchmarking, KPI Reporting, Data Governance, Cyber Security, Enterprise Data, Stakeholder Communication,
+  Calgary, Lethbridge, Alberta, New Grad Program, Rotational Program, June 2026, Computer Science.
+</div>
+
+<main class="container grid">
   <div>
-    <section class="card">
+    <section class="section fade-in">
       <h2>Experience</h2>
       <article>
         <h3>IT Specialist — Embe Consulting Engineers Inc.</h3>
@@ -118,7 +74,6 @@
           <li>Drove benchmarking of common incidents and root causes to inform process improvements.</li>
         </ul>
       </article>
-
       <article>
         <h3>Supply Chain Coordinator (On Call) — Mufaddal Abbas Ismail</h3>
         <div class="meta">Saudi Arabia · Dec 2020 — Present</div>
@@ -128,7 +83,6 @@
           <li>Managed customer inquiries, achieving a 98% satisfaction rate.</li>
         </ul>
       </article>
-
       <article>
         <h3>Customer Operations Support (On Call) — Ernie’s RV Storage</h3>
         <div class="meta">Lethbridge, AB · Aug 2021 — Present</div>
@@ -140,7 +94,7 @@
       </article>
     </section>
 
-    <section class="card">
+    <section class="section fade-in">
       <h2>Projects</h2>
       <article>
         <h3>Text‑Based Adventure Game (C++)</h3>
@@ -160,8 +114,7 @@
     </section>
   </div>
 
-  <!-- Right Column -->
-  <aside class="card">
+  <aside class="section fade-in">
     <h2>Summary</h2>
     <p>
       New‑Grad IT candidate with hands‑on experience in user support, requirements gathering, ad‑hoc reporting,
@@ -171,19 +124,19 @@
     </p>
 
     <h2>Skills</h2>
-    <div class="list-pills">
-      <span class="badge">ServiceNow</span>
-      <span class="badge">Excel</span>
-      <span class="badge">Power Query</span>
-      <span class="badge">Power BI</span>
-      <span class="badge">SQL</span>
-      <span class="badge">Python</span>
-      <span class="badge">Documentation</span>
-      <span class="badge">Requirements Gathering</span>
-      <span class="badge">KPI Reporting</span>
-      <span class="badge">Benchmarking</span>
-      <span class="badge">Data Governance (basic)</span>
-      <span class="badge">Cyber Security (interest)</span>
+    <div class="pills">
+      <span class="pill">ServiceNow</span>
+      <span class="pill">Excel</span>
+      <span class="pill">Power Query</span>
+      <span class="pill">Power BI</span>
+      <span class="pill">SQL</span>
+      <span class="pill">Python</span>
+      <span class="pill">Documentation</span>
+      <span class="pill">Requirements Gathering</span>
+      <span class="pill">KPI Reporting</span>
+      <span class="pill">Benchmarking</span>
+      <span class="pill">Data Governance (basic)</span>
+      <span class="pill">Cyber Security (interest)</span>
     </div>
 
     <h2>Education</h2>
@@ -197,14 +150,16 @@
       <li><strong>Website:</strong> <a href="https://quequsai.github.io" target="_blank" rel="noopener">quequsai.github.io</a></li>
       <li><strong>GitHub:</strong> <a href="https://github.com/quequsai" target="_blank" rel="noopener">@quequsai</a></li>
     </ul>
-
-    <p class="qr">Scan: <a href="https://quequsai.github.io" target="_blank" rel="noopener">Portfolio</a></p>
   </aside>
 </main>
 
-<footer class="footer">
-  &copy; 2025 Qusai Quresh • Lethbridge, AB • <a href="https://quequsai.github.io">quequsai.github.io</a>
+<footer class="container">
+  <footer class="footer">
+    &copy; 2025 Qusai Quresh • Lethbridge, AB • <a href="https://quequsai.github.io">quequsai.github.io</a>
+  </footer>
 </footer>
 
+<!-- JS for theme + fade-in -->
+<script src="script_theme.js"></script>
 </body>
 </html>
