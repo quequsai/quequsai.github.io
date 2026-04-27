@@ -1,46 +1,47 @@
-/* Refined Elegant Theme
-   Light: Versailles-inspired (ivory, gold, royal blue accents)
-   Dark: Dracula/Victorian-steampunk (aubergine, oxblood, brass)
-   Fonts: Bourgeoisie feel via Playfair Display + Libre Baskerville
-*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
-/* Optional Google Fonts import (remove if managed in HTML) */
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Playfair+Display:wght@600;700&display=swap');
-
+/* ── Theme Variables ── */
 :root {
-  /* LIGHT (Versailles) */
-  --bg: #f9f7f1;             /* ivory parchment */
-  --fg: #1e2230;             /* refined ink */
-  --muted: #5b6275;          /* soft slate */
-  --surface: #ffffff;        /* card */
-  --border: #e8e2d6;         /* bone */
-  --accent: #113a8f;         /* royal blue */
-  --accent-2: #c4a64f;       /* antique gold */
-  --shadow: 0 6px 20px rgba(20, 22, 30, 0.06);
+  /* Light mode: clean slate */
+  --bg: #f8fafc;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --accent: #0284c7;
+  --accent-2: #38bdf8;
+  --heading: #0f172a;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --text-muted: #64748b;
 }
 
 .theme-dark {
-  /* DARK (Dracula/Victorian steampunk) */
-  --bg: #0f0c13;             /* crypt */
-  --fg: #e7e2db;             /* vellum */
-  --muted: #a99f95;          /* tarnished parchment */
-  --surface: #161219;        /* velvet */
-  --border: #2b2531;         /* iron */
-  --accent: #b6464c;         /* oxblood */
-  --accent-2: #b28d52;       /* brass */
-  --shadow: 0 8px 24px rgba(0,0,0,0.35);
+  /* Dark mode: deep space */
+  --bg: #00000f;
+  --fg: #94a3b8;
+  --muted: #475569;
+  --surface: rgba(255,255,255,0.025);
+  --border: rgba(255,255,255,0.06);
+  --border-strong: rgba(255,255,255,0.1);
+  --accent: #38bdf8;
+  --accent-2: #7dd3fc;
+  --heading: #f1f5f9;
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --text-muted: #475569;
 }
 
-/* Base */
+/* ── Base ── */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: "Libre Baskerville", Georgia, serif;
+  font-family: 'Inter', sans-serif;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background .2s, color .2s;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -48,96 +49,121 @@ a:hover { text-decoration: underline; }
 
 .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 header { padding: 32px 20px 16px; }
-h1, h2, h3 { font-family: "Playfair Display", "Libre Baskerville", Georgia, serif; letter-spacing: .2px; }
-h1 { font-size: 2.25rem; margin: 0; }
-.subtitle { color: var(--muted); margin-top: 6px; font-size: 1.05rem; }
+
+h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: -.01em; }
+h1 { font-size: 2.25rem; margin: 0; color: var(--heading); font-weight: 900; }
+.subtitle { color: var(--muted); margin-top: 6px; font-size: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .06em; }
 
 /* Accent rule */
-.rule { height: 4px; width: 100%; background: linear-gradient(90deg, var(--accent-2), transparent); border-radius: 2px; margin: 14px 0 10px; }
+.rule { height: 3px; width: 100%; background: linear-gradient(90deg, var(--accent-2), transparent); border-radius: 2px; margin: 14px 0 10px; }
 
 /* Cards / Sections */
-.section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; margin: 14px 0; }
-.section h2 { font-size: 1.2rem; color: var(--accent); margin: 0 0 8px; }
-.meta { color: var(--muted); font-size: .95rem; }
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin: 14px 0;
+  transition: background .2s, border-color .2s;
+}
+.section h2 { font-size: 1.05rem; color: var(--accent); margin: 0 0 10px; letter-spacing: .04em; text-transform: uppercase; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+.meta { color: var(--muted); font-size: .9rem; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .04em; margin-bottom: 6px; }
 ul { margin: 6px 0 6px 1.1rem; padding: 0; }
-li { margin: 2px 0; }
+li { margin: 3px 0; font-size: .95rem; }
+article h3 { font-size: 1rem; color: var(--heading); margin: 12px 0 2px; }
 
 /* Pills & badges */
-.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.pill { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--accent); font-size: .85rem; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pill {
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--accent);
+  font-size: .8rem;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .02em;
+  transition: border-color .2s, background .2s;
+}
 
 /* Grid */
 .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
 @media (min-width: 820px) { .grid { grid-template-columns: 2fr 1fr; } }
 
 /* Footer */
-footer { color: var(--muted); font-size: .95rem; text-align: center; padding: 28px 20px 40px; }
+footer { color: var(--muted); font-size: .9rem; text-align: center; padding: 28px 20px 40px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .06em; }
 
-/* Button: Light/Dark toggle */
+/* ── Brand Monogram ── */
+.brand-monogram {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--accent-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--accent-2);
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  margin-right: 12px;
+  letter-spacing: -.04em;
+}
+
+/* ── Theme Toggle Button ── */
 #theme-toggle {
   position: fixed;
   right: 16px;
   top: 16px;
-  height: 40px;
+  height: 36px;
   padding: 0 12px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
   background: var(--surface);
   color: var(--fg);
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: transform .08s ease, background .2s ease, color .2s ease;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .06em;
+  font-weight: 700;
+  transition: transform .08s ease, background .2s ease, color .2s ease, border-color .2s ease;
   z-index: 1000;
 }
 #theme-toggle:hover { transform: translateY(-1px); }
 #theme-toggle .dot {
-  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
   background: var(--accent-2);
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent-2), transparent 75%);
 }
 
-/* Fade-in animation */
+/* ── Fade-in animation ── */
 .fade-in { opacity: 0; transform: translateY(8px); transition: opacity .6s ease, transform .6s ease; }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-/* Brand Monogram (Calligraphic QQ) */
-.brand-monogram {
-  font-family: 'Playfair Display', 'Libre Baskerville', serif;
-  font-size: 2.8rem;
-  font-weight: 700;
-  color: var(--accent-2);
-  letter-spacing: -1px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
-  display: inline-block;
-  border: 2px solid var(--accent-2);
-  border-radius: 50%;
-  width: 58px;
-  height: 58px;
-  text-align: center;
-  line-height: 54px;
-  margin-right: 12px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
-}
-.theme-dark .brand-monogram {
-  border-color: var(--accent-2);
-  background: var(--surface);
-  color: var(--accent-2);
-}
+/* ── Aside headings ── */
+aside .section h2 { margin-top: 16px; }
+aside .section h2:first-child { margin-top: 0; }
+aside .section p { font-size: .9rem; color: var(--fg); margin-bottom: 10px; }
 
-/* Mobile */
+/* ── Contact list ── */
+.contact-list { list-style: none; margin: 6px 0; padding: 0; }
+.contact-list li { font-size: .9rem; margin: 5px 0; }
+
+/* ── Mobile ── */
 @media (max-width: 640px) {
   h1 { font-size: 1.6rem; }
-  .subtitle { font-size: .9rem; }
+  .subtitle { font-size: .85rem; }
   header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 20px 12px 12px; }
-  .brand-monogram { width: 48px; height: 48px; font-size: 2.2rem; line-height: 44px; flex-shrink: 0; }
+  .brand-monogram { width: 44px; height: 44px; font-size: 1.3rem; }
   .container { padding: 12px; }
-  #theme-toggle { top: 8px; right: 8px; height: 34px; padding: 0 10px; font-size: 11px; }
+  #theme-toggle { top: 8px; right: 8px; height: 30px; padding: 0 10px; }
   .section { padding: 14px; }
-  .pill { font-size: .8rem; }
+  .pill { font-size: .75rem; }
 }
-
-/* Test
