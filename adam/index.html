@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adam Optimizer Analysis | Qusai Quresh</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%2300000f' stroke='%2338bdf8' stroke-width='1.5'/><text x='16' y='22' text-anchor='middle' font-family='monospace' font-weight='700' font-size='16' fill='%2338bdf8'>Q</text></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+    *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #00000f;
+      color: #94a3b8;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      padding-top: 40px;
+    }
+
+    /* ── nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      background: rgba(2,6,23,0.97);
+      border-bottom: 1px solid #0f2744;
+      padding: 0 20px; height: 40px;
+      display: flex; align-items: center; gap: 32px;
+      font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: .08em;
+      overflow-x: auto;
+    }
+    nav > * { flex-shrink: 0; }
+    nav a { text-decoration: none; font-weight: 700; color: #94a3b8; }
+    nav a.active { color: #38bdf8; }
+    nav .sep { color: #0f2744; }
+
+    /* ── layout ── */
+    article {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 28px 100px;
+    }
+
+    /* ── page header ── */
+    .proj-header {
+      margin-bottom: 56px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid #0f2744;
+    }
+    .proj-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .2em;
+      color: #38bdf8;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .proj-header h1 {
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: #f1f5f9;
+      line-height: 1.2;
+      margin-bottom: 18px;
+      letter-spacing: -.01em;
+    }
+    .proj-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #475569;
+      letter-spacing: .04em;
+      line-height: 2;
+    }
+
+    /* ── sections ── */
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-top: 56px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #0f2744;
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #7dd3fc;
+      margin-top: 28px;
+      margin-bottom: 10px;
+    }
+    p { margin-bottom: 16px; color: #94a3b8; }
+    strong { color: #e2e8f0; font-weight: 600; }
+    hr { border: none; border-top: 1px solid #0f2744; margin: 40px 0; }
+
+    /* ── code ── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: #0a1628;
+      color: #7dd3fc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    pre {
+      background: #060d1a;
+      border: 1px solid #0f2744;
+      border-radius: 8px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 18px 0 22px;
+    }
+    pre code { background: none; padding: 0; font-size: 13px; line-height: 1.7; color: #7dd3fc; }
+
+    /* ── figures ── */
+    .fig {
+      margin: 28px 0 36px;
+    }
+    .fig img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #0f2744;
+      display: block;
+    }
+    .fig figcaption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #475569;
+      margin-top: 10px;
+      letter-spacing: .04em;
+      line-height: 1.6;
+    }
+    .fig figcaption strong { color: #64748b; }
+
+    /* ── result cards ── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 20px 0 28px;
+    }
+    .result-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .result-card .optimizer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      color: #38bdf8;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .result-card .accuracy {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .result-card .sublabel {
+      font-size: 11px;
+      color: #475569;
+      margin-top: 2px;
+    }
+    .result-card.highlight-card {
+      border-color: rgba(56,189,248,0.3);
+      background: rgba(56,189,248,0.04);
+    }
+    .result-card.highlight-card .accuracy { color: #38bdf8; }
+
+    /* ── callout ── */
+    .callout {
+      background: rgba(56,189,248,0.05);
+      border-left: 3px solid #38bdf8;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+    .callout p { margin: 0; font-size: 14px; color: #94a3b8; }
+    .callout p + p { margin-top: 8px; }
+
+    /* ── links section ── */
+    .link-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.025);
+      color: #e2e8f0;
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: border-color .2s, background .2s;
+    }
+    .link-btn:hover {
+      border-color: #38bdf8;
+      background: rgba(56,189,248,0.06);
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    /* ── theme toggle ── */
+    #theme-btn {
+      position: fixed; top: 48px; right: 12px; z-index: 9998;
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(2,6,23,0.8); color: #38bdf8;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px); transition: background .2s, color .2s;
+    }
+
+    /* ── theme overrides (light) ── */
+    [data-theme="light"] body { background: #f8fafc; color: #475569; }
+    [data-theme="light"] nav { background: rgba(248,250,252,0.97) !important; border-bottom-color: #e2e8f0 !important; }
+    [data-theme="light"] nav a { color: #475569; }
+    [data-theme="light"] nav a.active { color: #0284c7; }
+    [data-theme="light"] nav .sep { color: #e2e8f0; }
+    [data-theme="light"] .proj-label { color: #0284c7; }
+    [data-theme="light"] .proj-header h1 { color: #0f172a; }
+    [data-theme="light"] .proj-meta { color: #94a3b8; }
+    [data-theme="light"] .proj-header { border-bottom-color: #e2e8f0; }
+    [data-theme="light"] h2 { color: #0f172a; border-bottom-color: #e2e8f0; }
+    [data-theme="light"] h3 { color: #0284c7; }
+    [data-theme="light"] p { color: #475569; }
+    [data-theme="light"] strong { color: #0f172a; }
+    [data-theme="light"] hr { border-top-color: #e2e8f0; }
+    [data-theme="light"] code { background: #f1f5f9; color: #0369a1; }
+    [data-theme="light"] pre { background: #f8fafc; border-color: #e2e8f0; }
+    [data-theme="light"] pre code { color: #0369a1; }
+    [data-theme="light"] .fig img { border-color: #e2e8f0; }
+    [data-theme="light"] .fig figcaption { color: #94a3b8; }
+    [data-theme="light"] .fig figcaption strong { color: #64748b; }
+    [data-theme="light"] .result-card { background: #fff; border-color: #e2e8f0; }
+    [data-theme="light"] .result-card .accuracy { color: #0f172a; }
+    [data-theme="light"] .result-card.highlight-card { border-color: #38bdf8; background: #f0f9ff; }
+    [data-theme="light"] .result-card.highlight-card .accuracy { color: #0284c7; }
+    [data-theme="light"] .callout { background: rgba(2,132,199,0.04); border-left-color: #0284c7; }
+    [data-theme="light"] .callout p { color: #475569; }
+    [data-theme="light"] .link-btn { border-color: #e2e8f0; background: #fff; color: #0f172a; }
+    [data-theme="light"] .link-btn:hover { border-color: #0284c7; background: #f0f9ff; color: #0284c7; }
+
+    /* ── responsive ── */
+    @media (max-width: 640px) {
+      nav { gap: 16px; padding: 0 12px; }
+      article { padding: 60px 16px 80px; }
+      .proj-header h1 { font-size: 1.5rem; }
+      .results-grid { grid-template-columns: repeat(2, 1fr); }
+      .link-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../">QUSAI QURESH</a>
+  <span class="sep">|</span>
+  <a href="../resume/">RESUME</a>
+  <a href="./" class="active">ADAM</a>
+</nav>
+
+<article>
+
+  <div class="proj-header">
+    <div class="proj-label">MATH 3850 &nbsp;·&nbsp; Numerical Optimization</div>
+    <h1>Adam: A Method for Stochastic Optimization</h1>
+    <div class="proj-meta">
+      COURSE &nbsp;·&nbsp; MATH 3850, University of Lethbridge &nbsp;·&nbsp; April 2026<br>
+      AUTHORS &nbsp;·&nbsp; Qusai Quresh &nbsp;&amp;&nbsp; Gurman Basran<br>
+      REFERENCE &nbsp;·&nbsp; Kingma &amp; Ba (ICLR 2015, arXiv:1412.6980)
+    </div>
+  </div>
+
+  <p>This project reproduces the key experimental results from the seminal Adam paper and grounds them in the optimization theory from MATH 3850. We implemented five optimizers from scratch in NumPy — SGD, SGD+Momentum, AdaGrad, RMSProp, and Adam — and tested them on MNIST logistic regression, a 101,770-parameter neural network, and the ill-conditioned Rosenbrock function. The implementation was verified against PyTorch's production optimizer to machine precision.</p>
+
+  <hr>
+
+  <h2>Why Adam? The Two Problems It Solves</h2>
+
+  <p>Vanilla stochastic gradient descent has two fundamental limitations that make it impractical for modern machine learning:</p>
+
+  <h3>Problem 1: Zigzag noise</h3>
+  <p>A single noisy minibatch gradient can send parameters in the wrong direction. On a high-curvature function, SGD bounces back and forth along the steepest dimension instead of following the valley floor. The fix is <strong>momentum</strong> — an exponential moving average (EMA) of past gradients that smooths the noise and provides a consistent descent direction.</p>
+
+  <h3>Problem 2: Bathtub scaling</h3>
+  <p>All parameters share one global step size α, even when some gradients are 100× larger than others. On an ill-conditioned problem with condition number κ = 2500, each steepest-descent step reduces the error by only ~0.1%. The fix is <strong>adaptive learning rates</strong> — tracking a per-parameter EMA of squared gradients so that large-gradient parameters take smaller steps and small-gradient parameters take larger ones.</p>
+
+  <h3>Problem 3: Initialisation bias (less obvious, equally critical)</h3>
+  <p>Both EMAs are initialised to zero. At step 1 with β₁ = 0.9, the raw momentum estimate is 10× too small. At step 1 with β₂ = 0.999, the variance estimate is ~1,000× too small — which would make the effective step size enormous. <strong>Bias correction</strong> divides each moment by (1 − βᵗ) to fix this analytically from iteration one.</p>
+
+  <div class="fig">
+    <img src="fig1_components.png" alt="The three building blocks of Adam">
+    <figcaption><strong>Figure 1.</strong> The three components of Adam shown side-by-side. Left: momentum (green) tracks the true gradient (dashed) despite noisy minibatch estimates (pink bars); the uncorrected EMA (blue) lags behind. Centre: at step 1, the raw moment estimates are 10× and 1,000× too low; bias correction brings both to their correct values immediately. Right: a parameter with gradient magnitude 10 (red) automatically receives a ~100× smaller effective learning rate than one with gradient 0.1 (blue).</figcaption>
+  </div>
+
+  <hr>
+
+  <h2>The Algorithm</h2>
+
+  <p>Combining the three components gives the Adam update rule. At each step <em>t</em>, given a minibatch gradient <strong>g</strong><sub>t</sub>:</p>
+
+  <pre><code>m_t  = β₁ · m_{t-1} + (1 - β₁) · g_t          # momentum (first moment)
+v_t  = β₂ · v_{t-1} + (1 - β₂) · g_t²         # adaptive rates (second moment)
+
+m̂_t  = m_t  / (1 - β₁ᵗ)                        # bias-corrected momentum
+v̂_t  = v_t  / (1 - β₂ᵗ)                        # bias-corrected variance
+
+θ_t  = θ_{t-1} − α · m̂_t / (√v̂_t + ε)         # parameter update</code></pre>
+
+  <p><strong>Default hyperparameters:</strong> α = 0.001, β₁ = 0.9, β₂ = 0.999, ε = 10⁻⁸. Only α typically needs tuning — β₁ and β₂ are robust across a wide range.</p>
+
+  <div class="callout">
+    <p><strong>Trust region property:</strong> the effective step size |Δθ| is approximately bounded by α regardless of gradient magnitude. This provides stability without an explicit line search — unlike Newton methods, Adam never takes a catastrophically large step.</p>
+    <p><strong>Memory:</strong> O(<em>n</em>) — two vectors of length equal to the parameter count. BFGS requires O(<em>n</em>²). For a 101,770-parameter network, Adam stores ~200K numbers; a full Newton step would require 10 billion.</p>
+  </div>
+
+  <hr>
+
+  <h2>Connection to Course Material (MATH 3850)</h2>
+
+  <p>Adam fits cleanly into the optimization framework developed throughout the course:</p>
+  <ul style="margin: 12px 0 18px 1.4rem; color: #94a3b8;">
+    <li style="margin-bottom: 8px;"><strong>Like steepest descent</strong> (Chapter 3): iterates θ<sub>t</sub> = θ<sub>t−1</sub> + α<sub>t</sub>p<sub>t</sub> with a gradient-based search direction</li>
+    <li style="margin-bottom: 8px;"><strong>Like Newton / BFGS</strong> (Chapter 6): scales the gradient by an approximation of the inverse Hessian — <code>m̂_t / √v̂_t</code> acts as a diagonal Hessian approximation</li>
+    <li style="margin-bottom: 8px;"><strong>Like trust region methods</strong> (Chapter 4): the effective step size is bounded, preventing the instability that afflicts full Newton steps near saddle points</li>
+    <li><strong>Convergence proof</strong> (Chapter 1): Theorem 4.1 of Kingma &amp; Ba proves average regret R(T)/T = O(1/√T) under convexity and bounded gradients, matching the theoretical optimum for online convex optimization</li>
+  </ul>
+
+  <hr>
+
+  <h2>Experiment 1 — MNIST Logistic Regression</h2>
+
+  <p>All five optimizers trained a 7,850-parameter logistic regression (784 inputs × 10 classes + bias) on 60,000 MNIST training images for 40 epochs, starting from identical random weights with minibatch size 128. This reproduces Section 6.1 of the original paper.</p>
+
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="optimizer">SGD</div>
+      <div class="accuracy">91.58%</div>
+      <div class="sublabel">loss: 0.321</div>
+    </div>
+    <div class="result-card">
+      <div class="optimizer">SGD + Momentum</div>
+      <div class="accuracy">92.36%</div>
+      <div class="sublabel">loss: 0.274</div>
+    </div>
+    <div class="result-card">
+      <div class="optimizer">AdaGrad</div>
+      <div class="accuracy">92.72%</div>
+      <div class="sublabel">loss: 0.264</div>
+    </div>
+    <div class="result-card">
+      <div class="optimizer">RMSProp</div>
+      <div class="accuracy">92.65%</div>
+      <div class="sublabel">loss: 0.260</div>
+    </div>
+    <div class="result-card highlight-card">
+      <div class="optimizer">Adam</div>
+      <div class="accuracy">92.69%</div>
+      <div class="sublabel">loss: 0.258</div>
+    </div>
+  </div>
+
+  <p>On a convex problem, the differences are small — all adaptive methods outperform plain SGD by about 1 percentage point, but the gap between them is within noise. Adam's advantage becomes much larger on non-convex problems (see Experiment 5).</p>
+
+  <div class="fig">
+    <img src="plot1_mnist_comparison.png" alt="Optimizer convergence on MNIST logistic regression">
+    <figcaption><strong>Figure 2.</strong> Training loss convergence on MNIST logistic regression, linear scale (left) and log scale (right). The log scale reveals that adaptive methods (Adam, AdaGrad, RMSProp) reach a consistently lower loss plateau than SGD-based methods across all 40 epochs.</figcaption>
+  </div>
+
+  <hr>
+
+  <h2>Experiment 2 — Correctness Verification Against PyTorch</h2>
+
+  <p>To confirm the NumPy implementation is correct, we ran identical training (same initialization, data ordering, and hyperparameters) with both our Adam and PyTorch's <code>torch.optim.Adam</code> for 4,690 iterations on MNIST logistic regression.</p>
+
+  <div class="results-grid" style="grid-template-columns: 1fr 1fr; max-width: 480px;">
+    <div class="result-card highlight-card">
+      <div class="optimizer">Max abs difference</div>
+      <div class="accuracy" style="font-size:1.1rem;">6.34 × 10⁻⁷</div>
+      <div class="sublabel">per-iteration loss</div>
+    </div>
+    <div class="result-card highlight-card">
+      <div class="optimizer">Mean difference</div>
+      <div class="accuracy" style="font-size:1.1rem;">1.24 × 10⁻⁹</div>
+      <div class="sublabel">across all steps</div>
+    </div>
+  </div>
+
+  <p>The two curves are visually indistinguishable. The tiny residual is consistent with floating-point rounding order (PyTorch uses 32-bit; our code uses 64-bit). The implementation is correct.</p>
+
+  <div class="fig">
+    <img src="plot2_pytorch_validation.png" alt="Custom Adam vs PyTorch Adam validation">
+    <figcaption><strong>Figure 3.</strong> Our NumPy Adam (blue solid) overlaid on PyTorch Adam (orange dashed) for the full 4,690-iteration run (left) and the first 500 iterations (right). The two lines are visually indistinguishable at both scales.</figcaption>
+  </div>
+
+  <hr>
+
+  <h2>Experiment 3 — Ill-Conditioned Quadratic &amp; Rosenbrock</h2>
+
+  <p>The ill-conditioned quadratic (κ = 2500) exposes the bathtub scaling problem directly: on this problem, steepest descent reduces error by only 0.1% per step and zigzags badly. Adam and adaptive methods converge far faster by automatically rescaling each dimension. The Rosenbrock function f(x,y) = (1−x)² + 100(y−x²)² with its curved valley provides a harder non-convex test.</p>
+
+  <div class="fig">
+    <img src="fig2_quadratic.png" alt="Ill-conditioned quadratic convergence">
+    <figcaption><strong>Figure 4.</strong> Left: convergence curves on the ill-conditioned quadratic. SGD takes hundreds of steps to reduce error where Adam converges in tens. Right: optimizer trajectories on the contour map — SGD zigzags along the high-curvature θ₁ axis while Adam tracks straight to the minimum.</figcaption>
+  </div>
+
+  <div class="fig">
+    <img src="plot3_rosenbrock.png" alt="Rosenbrock function optimizer comparison">
+    <figcaption><strong>Figure 5.</strong> Convergence on the Rosenbrock function (starting at (−1.5, 0.5), minimum at (1, 1)). Final function values: AdaGrad 0.000002, SGD+Momentum 0.000069, RMSProp 0.000225, Adam 0.043, SGD 1.47. Adam underperforms on this deterministic problem — it was designed for the stochastic regime where its noise-smoothing momentum and variance estimation add value.</figcaption>
+  </div>
+
+  <div class="callout">
+    <p><strong>Why does Adam lose on Rosenbrock?</strong> With exact gradients (no minibatch noise), the variance estimate v_t asymptotically captures the true squared gradient magnitude, and the effective step becomes roughly <code>α · sign(g)</code> — losing sensitivity to gradient magnitude entirely. Momentum-based SGD, which doesn't adaptively rescale, can exploit the exact curvature information more directly here.</p>
+  </div>
+
+  <hr>
+
+  <h2>Experiment 4 — Hyperparameter Sensitivity</h2>
+
+  <p>We trained logistic regression for 20 epochs varying one hyperparameter at a time while holding the others fixed at their defaults.</p>
+
+  <div class="fig">
+    <img src="plot4_hyperparameters.png" alt="Adam hyperparameter sensitivity analysis">
+    <figcaption><strong>Figure 6.</strong> Sensitivity of training loss to each hyperparameter over 20 epochs. Left: learning rate α — spread of 0.058 between worst (α = 0.0001) and best (α = 0.005). Centre: momentum β₁ — spread of only 0.005; nearly all curves overlap. Right: variance decay β₂ — spread of 0.008; equally robust. Only α requires tuning.</figcaption>
+  </div>
+
+  <div class="results-grid" style="max-width: 600px;">
+    <div class="result-card highlight-card">
+      <div class="optimizer">Learning rate α</div>
+      <div class="accuracy" style="font-size:1.1rem;">Δ loss = 0.058</div>
+      <div class="sublabel">critical — must tune</div>
+    </div>
+    <div class="result-card">
+      <div class="optimizer">Momentum β₁</div>
+      <div class="accuracy" style="font-size:1.1rem;">Δ loss = 0.005</div>
+      <div class="sublabel">robust, leave at 0.9</div>
+    </div>
+    <div class="result-card">
+      <div class="optimizer">Variance β₂</div>
+      <div class="accuracy" style="font-size:1.1rem;">Δ loss = 0.008</div>
+      <div class="sublabel">robust, leave at 0.999</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>Experiment 5 — Neural Network (101,770 Parameters)</h2>
+
+  <p>The MLP has two layers: 784 → 128 ReLU → 10 softmax, implemented from scratch including backpropagation and He weight initialization. All five optimizers trained it on MNIST for 20 epochs. This reproduces Section 6.2 of the original paper.</p>
+
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="optimizer">SGD</div>
+      <div class="accuracy">93.80%</div>
+      <div class="sublabel">test accuracy</div>
+    </div>
+    <div class="result-card">
+      <div class="optimizer">SGD + Momentum</div>
+      <div class="accuracy">97.65%</div>
+      <div class="sublabel">test accuracy</div>
+    </div>
+    <div class="result-card">
+      <div class="optimizer">AdaGrad</div>
+      <div class="accuracy">97.45%</div>
+      <div class="sublabel">test accuracy</div>
+    </div>
+    <div class="result-card">
+      <div class="optimizer">RMSProp</div>
+      <div class="accuracy">97.92%</div>
+      <div class="sublabel">test accuracy</div>
+    </div>
+    <div class="result-card highlight-card">
+      <div class="optimizer">Adam</div>
+      <div class="accuracy">97.97%</div>
+      <div class="sublabel">+4.17 pp over SGD</div>
+    </div>
+  </div>
+
+  <p>On the non-convex MLP, Adam's advantage over SGD grows to <strong>4.17 percentage points</strong> — four times larger than on logistic regression. The gradient noise across a deep network is exactly the regime Adam was designed for: varied gradient magnitudes per layer, saddle points throughout the loss landscape, and noisy minibatch estimates at every step.</p>
+
+  <div class="fig">
+    <img src="plot5_mlp_comparison.png" alt="MLP optimizer comparison on MNIST">
+    <figcaption><strong>Figure 7.</strong> Training loss on the 101,770-parameter MLP over 20 epochs, linear (left) and log scale (right). Adam and RMSProp clearly separate from SGD-based methods; Adam converges to the lowest loss plateau. The advantage grows with problem scale and non-convexity.</figcaption>
+  </div>
+
+  <hr>
+
+  <h2>Theoretical Analysis</h2>
+
+  <h3>Bias Correction Ablation</h3>
+
+  <p>Using an extreme β₂ = 0.9999 (to amplify the initialization effect), we compared Adam with and without bias correction for 100 epochs on logistic regression. Without correction, v̂_t is nearly zero early on, making the effective step size <code>α / √v̂_t</code> enormous and causing severe instability in the first few epochs. Bias correction fixes this completely from epoch 1.</p>
+
+  <h3>Regret Bound Verification O(1/√T)</h3>
+
+  <p>Theorem 4.1 of Kingma &amp; Ba guarantees that for convex objectives, Adam's average cumulative regret satisfies R(T)/T = O(1/√T) — matching the best achievable rate. We verified this empirically on a stochastic quadratic: minimise f(θ) = θ² with Gaussian noise gradients, 4,000 iterations averaged over 15 independent runs.</p>
+
+  <div class="fig">
+    <img src="fig5_ablation_regret.png" alt="Bias correction ablation and regret bound verification">
+    <figcaption><strong>Figure 8.</strong> Left: bias correction ablation. Without correction (dashed), early training is unstable under extreme β₂; with correction (solid), loss drops smoothly from step 1. Right: empirical average regret R(T)/T (blue) vs the theoretical O(1/√T) bound (dashed orange) on a log-log scale. The empirical slope ≈ −½ matches the theoretical prediction exactly.</figcaption>
+  </div>
+
+  <hr>
+
+  <h2>Key Findings</h2>
+
+  <div class="callout">
+    <p><strong>Adam's advantage scales with problem difficulty.</strong> On convex logistic regression, all adaptive methods are roughly equivalent (+1 pp over SGD). On the non-convex 100K-parameter neural network, Adam pulls ahead by 4.2 pp — the regime it was designed for.</p>
+  </div>
+
+  <div class="callout">
+    <p><strong>Only the learning rate needs tuning.</strong> β₁ and β₂ are robust across wide ranges (loss spread &lt; 0.01 across the full tested range). This "works out of the box" property is why Adam became the default optimizer across the ML community.</p>
+  </div>
+
+  <div class="callout">
+    <p><strong>Bias correction is not optional.</strong> Under extreme β₂ values, the uncorrected initialisation bias causes training to diverge early. The correction costs nothing computationally and is essential for stability.</p>
+  </div>
+
+  <div class="callout">
+    <p><strong>Adam is a stochastic optimizer.</strong> On the deterministic Rosenbrock function, simpler methods with exact gradients (AdaGrad, SGD+Momentum) outperform Adam. The momentum and variance estimation only add value when there is actual noise to smooth.</p>
+  </div>
+
+  <div class="callout">
+    <p><strong>The implementation is numerically exact.</strong> Maximum absolute loss difference between our NumPy implementation and PyTorch's production optimizer: 6.34 × 10⁻⁷ across 4,690 iterations.</p>
+  </div>
+
+  <hr>
+
+  <h2>Full Report &amp; Code</h2>
+
+  <p>The written report covers the complete mathematical derivations, all five experiments in full detail, and the theoretical convergence proof. The Python code implements all five optimizers and two models (logistic regression and MLP with backpropagation) from scratch using NumPy.</p>
+
+  <div class="link-row">
+    <a class="link-btn" href="report.pdf" target="_blank" rel="noopener">
+      &#128196; &nbsp;Full Report (PDF)
+    </a>
+    <a class="link-btn" href="https://github.com/quequsai" target="_blank" rel="noopener">
+      &#128279; &nbsp;GitHub (@quequsai)
+    </a>
+    <a class="link-btn" href="../">
+      &larr; &nbsp;Back to Hub
+    </a>
+  </div>
+
+</article>
+
+<button id="theme-btn" title="Toggle light/dark">◐</button>
+
+<script>
+  (function(){
+    const root = document.documentElement;
+    const btn = document.getElementById('theme-btn');
+    const saved = localStorage.getItem('theme-udte');
+    const systemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const apply = (light) => {
+      root.setAttribute('data-theme', light ? 'light' : 'dark');
+      btn.textContent = light ? '◑' : '◐';
+      btn.style.background = light ? 'rgba(248,250,252,0.9)' : 'rgba(2,6,23,0.8)';
+      btn.style.color = light ? '#0284c7' : '#38bdf8';
+      btn.style.borderColor = light ? '#e2e8f0' : 'rgba(255,255,255,0.1)';
+      localStorage.setItem('theme-udte', light ? 'light' : 'dark');
+    };
+    apply(saved ? saved === 'light' : systemLight);
+    btn.addEventListener('click', () => apply(root.getAttribute('data-theme') !== 'light'));
+  })();
+</script>
+
+</body>
+</html>
