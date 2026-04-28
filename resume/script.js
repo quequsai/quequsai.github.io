@@ -4,7 +4,7 @@
   const btn = document.getElementById('theme-toggle');
 
   // Initialize mode from localStorage or prefers-color-scheme
-  const preferred = localStorage.getItem('theme');
+  const preferred = localStorage.getItem('theme-udte');
   const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   const startDark = preferred ? preferred === 'dark' : systemDark;
 
@@ -12,7 +12,7 @@
     body.classList.toggle('theme-dark', dark);
     btn.setAttribute('aria-pressed', String(dark));
     btn.innerHTML = dark ? '☀️ Light <span class="dot"></span>' : '🌙 Dark <span class="dot"></span>';
-    localStorage.setItem('theme', dark ? 'dark' : 'light');
+    localStorage.setItem('theme-udte', dark ? 'dark' : 'light');
   };
 
   apply(startDark);
