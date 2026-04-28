@@ -61,7 +61,7 @@
     var ctx = cvs.getContext('2d');
 
     var particles = [];
-    var DURATION = 900;
+    var DURATION = 700;
     var start = null;
     var lastSpawn = 0;
 
@@ -83,13 +83,17 @@
       }
 
       if (t < 1) requestAnimationFrame(frame);
-      else window.location.href = destUrl;
+      else if ('startViewTransition' in document) {
+        document.startViewTransition(function () { window.location.href = destUrl; });
+      } else {
+        window.location.href = destUrl;
+      }
     }
 
     requestAnimationFrame(frame);
   }
 
-  /* ── CSS keyframes for non-warp transitions ── */
+  /* ── CSS keyframes for non-warp transitions + View Transitions API ── */
   var CSS = [
     '@keyframes enter-hub    { from{background:#00000f;opacity:1} to{background:#00000f;opacity:0} }',
     '@keyframes enter-resume { from{background:#f8fafc;transform:translateX(0)} to{background:#f8fafc;transform:translateX(-100%)} }',
@@ -97,6 +101,10 @@
     '@keyframes exit-to-resume  { from{background:#f8fafc;transform:translateX(100%)} to{background:#f8fafc;transform:translateX(0)} }',
     '@keyframes exit-to-adam    { from{background:#0f172a;clip-path:polygon(100% 0,100% 0,100% 100%,100% 100%)} to{background:#0f172a;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)} }',
     '@keyframes exit-default    { from{background:#000000;opacity:0} to{background:#000000;opacity:1} }',
+    '@keyframes vt-depart { to   { opacity:0; transform:scale(0.96); filter:blur(3px); } }',
+    '@keyframes vt-arrive { from { opacity:0; transform:scale(1.04); filter:blur(3px); } }',
+    '::view-transition-old(root) { animation: 320ms ease-in  vt-depart; }',
+    '::view-transition-new(root) { animation: 320ms ease-out vt-arrive; }',
   ].join('\n');
 
   var styleEl = document.createElement('style');
