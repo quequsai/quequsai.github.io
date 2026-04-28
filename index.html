@@ -138,15 +138,31 @@
       letter-spacing: .08em;
     }
 
-    #theme-btn {
-      position: fixed; top: 12px; right: 12px; z-index: 9998;
-      width: 32px; height: 32px; border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(2,6,23,0.8); color: #38bdf8;
-      font-size: 16px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(8px); transition: background .2s, color .2s;
+    .sky-cloud {
+      position: fixed;
+      background: #fff;
+      border-radius: 50px;
+      pointer-events: none;
+      z-index: 49;
+      opacity: 0;
+      transition: opacity 1.2s ease;
     }
+    [data-theme="light"] .sky-cloud { opacity: 0.82; }
+
+    #cloud-a { width:160px; height:40px; top:90px; right:200px; }
+    #cloud-a::before,#cloud-a::after { content:''; position:absolute; background:#fff; border-radius:50%; }
+    #cloud-a::before { width:80px; height:60px; top:-28px; left:20px; }
+    #cloud-a::after  { width:60px; height:50px; top:-22px; left:70px; }
+
+    #cloud-b { width:120px; height:32px; top:130px; right:420px; }
+    #cloud-b::before,#cloud-b::after { content:''; position:absolute; background:#fff; border-radius:50%; }
+    #cloud-b::before { width:60px; height:48px; top:-22px; left:14px; }
+    #cloud-b::after  { width:50px; height:40px; top:-18px; left:54px; }
+
+    #cloud-c { width:100px; height:28px; top:75px; right:520px; }
+    #cloud-c::before,#cloud-c::after { content:''; position:absolute; background:#fff; border-radius:50%; }
+    #cloud-c::before { width:50px; height:42px; top:-20px; left:10px; }
+    #cloud-c::after  { width:40px; height:34px; top:-16px; left:46px; }
 
     @media (max-width: 600px) {
       .page { padding: 40px 16px 60px; }
@@ -195,7 +211,12 @@
 
 <footer>QUSAI QURESH &nbsp;·&nbsp; QUEQUSAI.GITHUB.IO &nbsp;·&nbsp; 2026</footer>
 
-<button id="theme-btn" title="Toggle light/dark">◐</button>
+<div class="sky-cloud" id="cloud-a"></div>
+<div class="sky-cloud" id="cloud-b"></div>
+<div class="sky-cloud" id="cloud-c"></div>
+<canvas id="sky-body" width="64" height="64"
+  style="position:fixed;top:20px;right:20px;z-index:9998;cursor:pointer;border-radius:50%;pointer-events:auto;"
+  title="Toggle light / dark"></canvas>
 
 <script>
   const canvas = document.getElementById('stars');
@@ -231,22 +252,18 @@
 </script>
 <script>
   (function(){
-    const root = document.documentElement;
-    const btn = document.getElementById('theme-btn');
-    const saved = localStorage.getItem('theme-udte');
-    const systemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-    const apply = (light) => {
+    var root = document.documentElement;
+    var saved = localStorage.getItem('theme-udte');
+    var systemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    var apply = function(light) {
       root.setAttribute('data-theme', light ? 'light' : 'dark');
-      btn.textContent = light ? '◑' : '◐';
-      btn.style.background = light ? 'rgba(248,250,252,0.9)' : 'rgba(2,6,23,0.8)';
-      btn.style.color = light ? '#0284c7' : '#38bdf8';
-      btn.style.borderColor = light ? '#e2e8f0' : 'rgba(255,255,255,0.1)';
       localStorage.setItem('theme-udte', light ? 'light' : 'dark');
     };
     apply(saved ? saved === 'light' : systemLight);
-    btn.addEventListener('click', () => apply(root.getAttribute('data-theme') !== 'light'));
+    window._applyTheme = apply;
   })();
 </script>
+<script src="sky.js"></script>
 <script src="transitions.js"></script>
 </body>
 </html>
