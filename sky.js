@@ -1,8 +1,8 @@
 (function () {
   'use strict';
 
-  var skyCvs = document.getElementById('sky-body');
-  if (!skyCvs) return;
+  var skyEl = document.getElementById('sky-body');
+  if (!skyEl) return;
 
   var animating = false;
 
@@ -21,11 +21,12 @@
     return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + Math.max(0, Math.min(1, a)).toFixed(3) + ')';
   }
 
-  /* ── Draw celestial body at (cx,cy) with radius r.
-        progress 0 = crescent moon, progress 1 = full sun ── */
+  /* ── Draw celestial body on canvas overlay during arc animation.
+        progress 0 = crescent moon, progress 1 = full sun.
+        Matches sunmoon.css style: circle + offset cover circle for crescent. ── */
   function drawBody(ctx, cx, cy, r, progress) {
-    var bodyCol = lerpRGB([210, 225, 245], [252, 211, 77], progress);
-    var glowCol = lerpRGB([100, 140, 200], [251, 146, 60], progress);
+    var bodyCol = lerpRGB([238, 238, 255], [246, 214, 2], progress);
+    var glowCol = lerpRGB([150, 170, 230], [245, 235, 113], progress);
     var glowR   = r * (1.8 + progress * 0.6);
 
     /* Outer glow */
@@ -37,32 +38,38 @@
     ctx.fillStyle = grd;
     ctx.fill();
 
-    /* Body — crescent below progress 0.3, full circle above */
-    if (progress < 0.3) {
-      /* Crescent using even-odd clip: rect covers body area, circle punches crescent hole */
-      var cp    = progress / 0.3;
-      var cutR  = r * (0.85 - cp * 0.2);
-      var cutOX = r * (0.38 - cp * 0.1);
-      ctx.save();
+    /* Body circle */
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = rgbaStr(bodyCol, 1);
+    ctx.fill();
+
+    /* Crescent cover circle — offset dark circle slides away as progress → 0.5 */
+    if (progress < 0.5) {
+      var coverA  = 1 - progress * 2;
+      var coverOX = r * 0.46;
       ctx.beginPath();
-      ctx.rect(cx - r * 2.5, cy - r * 2.5, r * 5, r * 5);
-      ctx.arc(cx + cutOX, cy - r * 0.08, cutR, 0, Math.PI * 2);
-      ctx.clip('evenodd');
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = rgbaStr(bodyCol, 1);
-      ctx.fill();
-      ctx.restore();
-    } else {
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = rgbaStr(bodyCol, 1);
+      ctx.arc(cx + coverOX, cy - r * 0.06, r * 0.88, 0, Math.PI * 2);
+      ctx.fillStyle = rgbaStr([0, 0, 15], coverA);
       ctx.fill();
     }
 
-    /* Sun rays — fade in above progress 0.45 */
-    if (progress > 0.45) {
-      var rayA = Math.min(1, (progress - 0.45) / 0.3);
+    /* Moon spots — fade out as crescent disappears */
+    if (progress < 0.4) {
+      var spotA = 1 - progress / 0.4;
+      ctx.beginPath();
+      ctx.arc(cx - r * 0.22, cy + r * 0.28, r * 0.19, 0, Math.PI * 2);
+      ctx.fillStyle = rgbaStr([180, 190, 215], spotA);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx - r * 0.05, cy + r * 0.30, r * 0.09, 0, Math.PI * 2);
+      ctx.fillStyle = rgbaStr([180, 190, 215], spotA);
+      ctx.fill();
+    }
+
+    /* Sun rays — fade in above progress 0.55 */
+    if (progress > 0.55) {
+      var rayA = Math.min(1, (progress - 0.55) / 0.3);
       for (var i = 0; i < 8; i++) {
         var ang = (i / 8) * Math.PI * 2;
         var r1  = r + 4;
@@ -70,19 +77,11 @@
         ctx.beginPath();
         ctx.moveTo(cx + Math.cos(ang) * r1, cy + Math.sin(ang) * r1);
         ctx.lineTo(cx + Math.cos(ang) * r2, cy + Math.sin(ang) * r2);
-        ctx.strokeStyle = rgbaStr([252, 211, 77], rayA * 0.7);
+        ctx.strokeStyle = rgbaStr([246, 214, 2], rayA * 0.7);
         ctx.lineWidth = 2.2;
         ctx.stroke();
       }
     }
-  }
-
-  /* ── Redraw the static sky-body canvas to match current theme ── */
-  function updateSkyBody() {
-    var ctx     = skyCvs.getContext('2d');
-    var isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    ctx.clearRect(0, 0, 64, 64);
-    drawBody(ctx, 32, 32, 16, isLight ? 1 : 0);
   }
 
   /* ── Arc animation across the sky ──
@@ -93,7 +92,7 @@
   function startArc(toLight, dur, visualOnly, onDone) {
     if (animating) return;
     animating = true;
-    skyCvs.style.opacity = '0';
+    skyEl.style.opacity = '0';
 
     var W   = window.innerWidth;
     var H   = window.innerHeight;
@@ -109,9 +108,9 @@
     var start    = null;
 
     /* Parabolic arc: body travels from upper-right (sx,sy) to upper-left (px,py)
-       at t=0.5 then returns home.  Formula: pos = start + (peak-start) * 4t(1-t)  */
-    var sx = W - 52, sy = 52;  /* sky-body canvas centre (top:20, right:20, size:64) */
-    var px = 52,     py = 35;  /* mirror peak — slightly higher                      */
+       at t=0.5 then returns home.  Formula: pos = start + (peak-start) * 4t(1-t) */
+    var sx = W - 52, sy = 52;
+    var px = 52,     py = 35;
 
     function frame(now) {
       if (!start) start = now;
@@ -125,7 +124,6 @@
       ctx.clearRect(0, 0, W, H);
       drawBody(ctx, x, y, 24, progress);
 
-      /* Switch theme at the midpoint of the arc */
       if (t >= 0.5 && !themeSet && !visualOnly) {
         themeSet = true;
         if (window._applyTheme) window._applyTheme(toLight);
@@ -135,9 +133,8 @@
         requestAnimationFrame(frame);
       } else {
         cvs.remove();
-        skyCvs.style.opacity = '';
+        skyEl.style.opacity = '';
         animating = false;
-        updateSkyBody();
         if (onDone) onDone();
       }
     }
@@ -145,32 +142,27 @@
     requestAnimationFrame(frame);
   }
 
-  /* ── Bfcache recovery — reset state if page is restored ── */
+  /* ── Bfcache recovery ── */
   window.addEventListener('pageshow', function (e) {
     if (e.persisted) {
       animating = false;
-      skyCvs.style.opacity = '';
-      updateSkyBody();
+      skyEl.style.opacity = '';
     }
   });
 
-  /* ── Public API used by transitions.js ──
-     Plays a quick visual-only sun→moon arc (no theme change) then fires callback */
+  /* ── Public API: 1000ms visual-only sun→moon arc then fires callback ── */
   window._quickMoonPreview = function (callback) {
-    startArc(false, 650, true, callback);
+    startArc(false, 1000, true, callback);
   };
 
   /* ── Click handler ── */
-  skyCvs.addEventListener('click', function () {
+  skyEl.addEventListener('click', function () {
     if (animating) return;
     var isLight = document.documentElement.getAttribute('data-theme') === 'light';
     startArc(!isLight, 1500, false, null);
   });
 
-  /* ── Initial render ── */
-  updateSkyBody();
-
-  /* Stay in sync if theme is changed programmatically */
-  new MutationObserver(updateSkyBody)
+  /* MutationObserver: CSS handles the visual sync via data-theme; kept as safety net */
+  new MutationObserver(function () {})
     .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();

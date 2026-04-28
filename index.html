@@ -23,7 +23,7 @@
       --card-hover-border: #38bdf8; --card-hover-bg: #f0f9ff;
       --subtitle: #94a3b8; --footer: #cbd5e1; --accent: #0284c7;
     }
-    [data-theme="light"] #stars { opacity: 0.04; }
+    [data-theme="light"] #stars { opacity: 0; }
 
     html, body {
       width: 100%; height: 100%;
@@ -31,10 +31,21 @@
       color: var(--fg);
       font-family: 'Inter', sans-serif;
       overflow-x: hidden;
-      transition: background .2s, color .2s;
+      transition: color .2s;
     }
 
-    #stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; transition: opacity .2s; }
+    #sky-bg {
+      position: fixed; inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      background: linear-gradient(180deg,
+        #0d1f5e 0%, #1a4fa0 30%, #2f80c8 60%, #7ec8e3 85%, #b8e0f0 100%);
+    }
+    [data-theme="light"] #sky-bg { opacity: 1; }
+
+    #stars { position: fixed; inset: 0; pointer-events: none; z-index: 1; transition: opacity 1.5s ease; }
 
     .page {
       position: relative; z-index: 1;
@@ -164,6 +175,45 @@
     #cloud-c::before { width:50px; height:42px; top:-20px; left:10px; }
     #cloud-c::after  { width:40px; height:34px; top:-16px; left:46px; }
 
+    #sky-body {
+      position: fixed; top: 20px; right: 20px;
+      width: 64px; height: 64px;
+      z-index: 9998; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #sky-moon {
+      width: 42px; height: 42px;
+      background: #eef;
+      border-radius: 50%;
+      position: relative;
+      transition: background 1s ease, box-shadow 1s ease;
+    }
+    [data-theme="light"] #sky-moon {
+      background: #F6D602;
+      box-shadow: 0 0 20px 8px rgba(246,214,2,0.45), 0 0 6px 2px rgba(245,235,113,0.6);
+    }
+    .moon-spot {
+      border-radius: 50%;
+      position: absolute;
+      background: #ccd;
+      transition: all 1s ease;
+    }
+    [data-theme="light"] .moon-spot { width: 0 !important; height: 0 !important; opacity: 0; }
+    #moon-spot1 { width: 9px;  height: 9px;  top: 24px; left: 8px;  }
+    #moon-spot2 { width: 5px;  height: 5px;  top: 26px; left: 20px; }
+    #moon-cover {
+      width: 34px; height: 34px;
+      background: #00000f;
+      border-radius: 50%;
+      position: absolute;
+      top: -4px; left: 16px;
+      transition: transform 1s ease, opacity 1s ease;
+    }
+    [data-theme="light"] #moon-cover {
+      transform: translateX(52px);
+      opacity: 0;
+    }
+
     @media (max-width: 600px) {
       .page { padding: 40px 16px 60px; }
       .card { width: 100%; }
@@ -173,6 +223,7 @@
 </head>
 <body data-page="hub">
 
+<div id="sky-bg"></div>
 <canvas id="stars"></canvas>
 
 <div class="page">
@@ -214,9 +265,13 @@
 <div class="sky-cloud" id="cloud-a"></div>
 <div class="sky-cloud" id="cloud-b"></div>
 <div class="sky-cloud" id="cloud-c"></div>
-<canvas id="sky-body" width="64" height="64"
-  style="position:fixed;top:20px;right:20px;z-index:9998;cursor:pointer;border-radius:50%;pointer-events:auto;"
-  title="Toggle light / dark"></canvas>
+<div id="sky-body" title="Toggle light / dark">
+  <div id="sky-moon">
+    <div class="moon-spot" id="moon-spot1"></div>
+    <div class="moon-spot" id="moon-spot2"></div>
+    <div id="moon-cover"></div>
+  </div>
+</div>
 
 <script>
   const canvas = document.getElementById('stars');
