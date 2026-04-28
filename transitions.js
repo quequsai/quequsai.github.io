@@ -33,7 +33,7 @@
       stars.push({ ox: sx, oy: sy, angle: angle, r: sr, a: sa });
     }
 
-    var DURATION = 1400;
+    var DURATION = 1200;
     var start = null;
 
     /* Very slow start, explosive acceleration — like a ship jumping to warp */
@@ -91,13 +91,8 @@
         }
       }
 
-      /* Final fade to deep dark (not white) */
-      if (t > 0.87) {
-        var fA = (t - 0.87) / 0.13;
-        ctx.fillStyle = 'rgba(0,0,12,' + fA + ')';
-        ctx.fillRect(0, 0, W, H);
-      }
-
+      /* No blackout — navigate while stars are at full stretch so the
+         arrival page can immediately pick up from the same warp state */
       if (t < 1) {
         requestAnimationFrame(frame);
       } else {
