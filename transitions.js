@@ -1,103 +1,79 @@
 (function () {
   var PAGE = document.body.dataset.page || 'default';
 
-  /* ── Seeded RNG (matches hub/UDTE starfield, seed 42) ── */
-  function seededRng(seed) {
-    var s = seed;
-    return function () {
-      s = (s * 1664525 + 1013904223) & 0xffffffff;
-      return (s >>> 0) / 0xffffffff;
+  /* ── Particle helpers ── */
+  function makeParticle(W, H) {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: -(0.6 + Math.random() * 1.0),
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.022 + Math.random() * 0.028,
+      r: 1.2 + Math.random() * 2.2,
+      alpha: 0.45 + Math.random() * 0.45,
+      born: null,
+      lifespan: 1400 + Math.random() * 800,
     };
   }
 
-  /* ── Canvas hyperspace: stars stretch outward and fade to dark ── */
-  function playHyperspace(destUrl) {
-    var W = window.innerWidth, H = window.innerHeight;
-    var cx = W / 2, cy = H / 2;
-    var maxDim = Math.sqrt(W * W + H * H);
+  function tickParticle(ctx, p, now) {
+    if (!p.born) p.born = now;
+    var age = (now - p.born) / p.lifespan;
+    if (age >= 1) return false;
 
+    p.wobble += p.wobbleSpeed;
+    p.x += p.vx + Math.sin(p.wobble) * 0.25;
+    p.y += p.vy;
+
+    var fade = age < 0.15 ? age / 0.15 : age > 0.7 ? 1 - (age - 0.7) / 0.3 : 1;
+    var a = p.alpha * fade;
+    if (a <= 0.01) return true;
+
+    var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.8);
+    g.addColorStop(0,    'rgba(255,255,255,' + a + ')');
+    g.addColorStop(0.35, 'rgba(185,220,255,' + (a * 0.55) + ')');
+    g.addColorStop(1,    'rgba(100,160,255,0)');
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r * 2.8, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+    return true;
+  }
+
+  /* ── Star-bubble exit: particles pop up and float across the page ── */
+  function playStarBubble(destUrl) {
+    var W = window.innerWidth, H = window.innerHeight;
     var cvs = document.createElement('canvas');
-    cvs.width = W;
-    cvs.height = H;
+    cvs.width = W; cvs.height = H;
     cvs.style.cssText = 'position:fixed;inset:0;z-index:99999;pointer-events:none;';
     document.body.appendChild(cvs);
     var ctx = cvs.getContext('2d');
 
-    /* Generate the same 500 stars as the hub's seeded starfield */
-    var rng = seededRng(42);
-    var stars = [];
-    for (var i = 0; i < 500; i++) {
-      var sx = rng() * W, sy = rng() * H;
-      var sr = rng() * 1.2 + 0.2, sa = rng() * 0.6 + 0.1;
-      var angle = Math.atan2(sy - cy, sx - cx);
-      stars.push({ ox: sx, oy: sy, angle: angle, r: sr, a: sa });
-    }
-
-    var DURATION = 1200;
+    var particles = [];
+    var DURATION = 900;
     var start = null;
-
-    /* Very slow start, explosive acceleration — like a ship jumping to warp */
-    function ease(t) {
-      return t < 0.35 ? t * t * 0.816 : 0.1 + Math.pow((t - 0.35) / 0.65, 2.6) * 0.9;
-    }
+    var lastSpawn = 0;
 
     function frame(now) {
-      if (!start) start = now;
-      var t  = Math.min((now - start) / DURATION, 1);
-      var e  = ease(t);
+      if (!start) { start = now; lastSpawn = now; }
+      var t = Math.min((now - start) / DURATION, 1);
 
-      /* Dark background — slowly fills in so the page fades behind the stars */
-      var bgA = 0.08 + e * 0.65;
-      ctx.fillStyle = 'rgba(0,0,12,' + bgA + ')';
-      ctx.fillRect(0, 0, W, H);
+      ctx.clearRect(0, 0, W, H);
 
-      for (var i = 0; i < stars.length; i++) {
-        var s = stars[i];
-
-        /* How far the star has travelled from its resting position */
-        var travel = e * maxDim * 1.5;
-        /* Head: leading edge, moving outward */
-        var hx = s.ox + Math.cos(s.angle) * travel;
-        var hy = s.oy + Math.sin(s.angle) * travel;
-        /* Tail: lags the head — streak grows as speed increases */
-        var trailLen = Math.max(0, e - 0.08) * maxDim * 0.55;
-        var tx = s.ox + Math.cos(s.angle) * Math.max(0, travel - trailLen);
-        var ty = s.oy + Math.sin(s.angle) * Math.max(0, travel - trailLen);
-
-        /* Skip once fully off screen */
-        if (travel - trailLen > maxDim * 1.6) continue;
-
-        var alpha = s.a * Math.min(1, e * 8 + 0.25);
-
-        if (e < 0.1) {
-          /* Phase 1: still dots at resting positions */
-          var dotA = s.a * (0.3 + e / 0.1 * 0.7);
-          ctx.beginPath();
-          ctx.arc(s.ox, s.oy, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255,255,255,' + dotA + ')';
-          ctx.fill();
-        } else {
-          /* Phase 2+: elongating streaks */
-          var grad = ctx.createLinearGradient(tx, ty, hx, hy);
-          grad.addColorStop(0,   'rgba(100,190,255,0)');
-          grad.addColorStop(0.3, 'rgba(160,215,255,' + (alpha * 0.45) + ')');
-          grad.addColorStop(1,   'rgba(255,255,255,' + alpha + ')');
-          ctx.beginPath();
-          ctx.moveTo(tx, ty);
-          ctx.lineTo(hx, hy);
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = s.r * 1.1;
-          ctx.stroke();
-        }
+      /* Accelerating spawn — more stars appear as transition progresses */
+      var target = Math.round(t * t * 75 + t * 25);
+      if (particles.length < target && now - lastSpawn > 8) {
+        particles.push(makeParticle(W, H));
+        lastSpawn = now;
       }
 
-      /* No blackout — navigate while stars are at full stretch so the
-         arrival page can immediately pick up from the same warp state */
-      if (t < 1) {
-        requestAnimationFrame(frame);
-      } else {
-        window.location.href = destUrl;
+      for (var i = particles.length - 1; i >= 0; i--) {
+        if (!tickParticle(ctx, particles[i], now)) particles.splice(i, 1);
       }
+
+      if (t < 1) requestAnimationFrame(frame);
+      else window.location.href = destUrl;
     }
 
     requestAnimationFrame(frame);
@@ -147,8 +123,7 @@
     var dest = a.href || new URL(raw, location.href).href;
 
     if (/\/UDTE\b/.test(dest)) {
-      /* Hyperspace warp — canvas animation */
-      playHyperspace(dest);
+      playStarBubble(dest);
     } else if (/\/resume\b/.test(dest)) {
       ov.style.opacity   = '';
       ov.style.animation = 'exit-to-resume 450ms ease forwards';
