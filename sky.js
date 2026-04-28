@@ -21,7 +21,7 @@
     return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + Math.max(0, Math.min(1, a)).toFixed(3) + ')';
   }
 
-  /* ── Draw in-place (progress 0=moon, 1=sun) matching sunmoon.css style ── */
+  /* ── Draw celestial body in place (progress 0=moon, 1=sun) ── */
   function drawBody(ctx, cx, cy, r, progress) {
     var bodyCol = lerpRGB([238, 238, 255], [246, 214, 2], progress);
     var glowCol = lerpRGB([150, 170, 230], [245, 235, 113], progress);
@@ -40,7 +40,7 @@
     ctx.fillStyle = rgbaStr(bodyCol, 1);
     ctx.fill();
 
-    /* Cover circle creates crescent (fades out as body becomes sun) */
+    /* Cover circle slides away to reveal sun */
     if (progress < 0.5) {
       var coverA = 1 - progress * 2;
       ctx.beginPath();
@@ -67,11 +67,9 @@
       var rayA = Math.min(1, (progress - 0.55) / 0.3);
       for (var i = 0; i < 8; i++) {
         var ang = (i / 8) * Math.PI * 2;
-        var r1  = r + 4;
-        var r2  = r + 12 + progress * 5;
         ctx.beginPath();
-        ctx.moveTo(cx + Math.cos(ang) * r1, cy + Math.sin(ang) * r1);
-        ctx.lineTo(cx + Math.cos(ang) * r2, cy + Math.sin(ang) * r2);
+        ctx.moveTo(cx + Math.cos(ang) * (r + 4),              cy + Math.sin(ang) * (r + 4));
+        ctx.lineTo(cx + Math.cos(ang) * (r + 12 + progress * 5), cy + Math.sin(ang) * (r + 12 + progress * 5));
         ctx.strokeStyle = rgbaStr([246, 214, 2], rayA * 0.7);
         ctx.lineWidth = 2.2;
         ctx.stroke();
@@ -79,7 +77,7 @@
     }
   }
 
-  /* ── Canvas overlay animation — body stays fixed in corner, only morphs ── */
+  /* ── Canvas overlay animation — body morphs in place, background animates in sync ── */
   function startArc(toLight, dur, visualOnly, onDone) {
     if (animating) return;
     animating = true;
@@ -94,9 +92,19 @@
     document.body.appendChild(cvs);
     var ctx = cvs.getContext('2d');
 
-    /* Fixed position: matches centre of the 64×64 sky-body at top:20px right:20px */
+    /* Fixed position matching sky-body centre: top:20+32=52, right:20+32=52 from right */
     var cx = W - 52;
     var cy = 52;
+
+    /* Background elements to drive from the animation loop */
+    var skyBgEl  = document.getElementById('sky-bg');
+    var starsEl  = document.getElementById('stars');
+    var cloudEls = Array.prototype.slice.call(document.querySelectorAll('.sky-cloud'));
+
+    /* Disable CSS transitions so JS drives them smoothly */
+    if (skyBgEl) skyBgEl.style.transition = 'none';
+    if (starsEl) starsEl.style.transition = 'none';
+    cloudEls.forEach(function (c) { c.style.transition = 'none'; });
 
     var themeSet = false;
     var start    = null;
@@ -109,6 +117,30 @@
       ctx.clearRect(0, 0, cvs.width, cvs.height);
       drawBody(ctx, cx, cy, 21, progress);
 
+      /* Sky, stars, clouds — staggered for a natural feel */
+      var skyAlpha, starAlpha, cloudAlpha, cloudSlide;
+      if (toLight) {
+        /* Stars fade out first, sky rises behind, clouds drift in from right */
+        starAlpha  = Math.max(0, 1 - t / 0.65);
+        skyAlpha   = Math.max(0, (t - 0.35) / 0.65);
+        cloudAlpha = Math.max(0, (t - 0.55) / 0.45) * 0.82;
+        cloudSlide = (1 - Math.min(1, Math.max(0, (t - 0.55) / 0.45))) * 40;
+      } else {
+        /* Sky darkens first so stars emerge from a dark background */
+        skyAlpha   = Math.max(0, 1 - t / 0.65);
+        starAlpha  = Math.max(0, (t - 0.35) / 0.65);
+        cloudAlpha = Math.max(0, 1 - t * 2.2) * 0.82;
+        cloudSlide = Math.min(40, Math.max(0, (t - 0.25) / 0.35) * 40);
+      }
+
+      if (skyBgEl) skyBgEl.style.opacity = skyAlpha.toFixed(4);
+      if (starsEl) starsEl.style.opacity  = starAlpha.toFixed(4);
+      cloudEls.forEach(function (c) {
+        c.style.opacity   = cloudAlpha.toFixed(4);
+        c.style.transform = 'translateX(' + cloudSlide.toFixed(1) + 'px)';
+      });
+
+      /* Theme switch at midpoint (card/text colours) */
       if (t >= 0.5 && !themeSet && !visualOnly) {
         themeSet = true;
         if (window._applyTheme) window._applyTheme(toLight);
@@ -117,6 +149,15 @@
       if (t < 1) {
         requestAnimationFrame(frame);
       } else {
+        /* Restore CSS transitions and clear inline overrides —
+           CSS immediately picks up the correct final state */
+        if (skyBgEl) { skyBgEl.style.transition = ''; skyBgEl.style.opacity   = ''; }
+        if (starsEl) { starsEl.style.transition  = ''; starsEl.style.opacity   = ''; }
+        cloudEls.forEach(function (c) {
+          c.style.transition = '';
+          c.style.opacity    = '';
+          c.style.transform  = '';
+        });
         cvs.remove();
         skyEl.style.opacity = '';
         animating = false;
