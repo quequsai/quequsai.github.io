@@ -15,7 +15,7 @@
       --bg: #00000f; --fg: #94a3b8; --heading: #f1f5f9;
       --card-bg: rgba(255,255,255,0.025); --card-border: rgba(255,255,255,0.06);
       --card-hover-border: #1e3a5f; --card-hover-bg: rgba(255,255,255,0.04);
-      --subtitle: #334155; --footer: #1e293b; --accent: #38bdf8;
+      --subtitle: #64748b; --footer: #1e293b; --accent: #38bdf8;
     }
     [data-theme="light"] {
       --bg: #f8fafc; --fg: #475569; --heading: #0f172a;
@@ -155,7 +155,7 @@
     }
   </style>
 </head>
-<body>
+<body data-page="hub">
 
 <canvas id="stars"></canvas>
 
@@ -184,7 +184,7 @@
 
     <a class="card" href="./adam/">
       <div class="card-icon">&#8711;</div>
-      <div class="card-tag">MATH 3850 · Numerical Optimization</div>
+      <div class="card-tag">Numerical Optimisation</div>
       <h2>Adam Optimizer Analysis</h2>
       <p>Deep dive into adaptive gradient descent — theory, convergence proofs, 5 experiments, and PyTorch validation across quadratic, logistic, and neural network benchmarks.</p>
       <div class="card-link">EXPLORE &rarr;</div>
@@ -247,5 +247,6 @@
     btn.addEventListener('click', () => apply(root.getAttribute('data-theme') !== 'light'));
   })();
 </script>
+<script src="transitions.js"></script>
 </body>
 </html>

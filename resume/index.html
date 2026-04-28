@@ -26,7 +26,13 @@
   }
   </script>
 </head>
-<body>
+<body data-page="resume" style="padding-top:40px;">
+
+<nav style="position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:40px;display:flex;align-items:center;gap:24px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;transition:background .2s,border-color .2s;">
+  <a href="../" style="color:var(--muted);text-decoration:none;font-weight:700;">QUSAI QURESH</a>
+  <span style="color:var(--border-strong);">|</span>
+  <a href="./" style="color:var(--accent);text-decoration:none;font-weight:700;">RESUME</a>
+</nav>
 
 <button id="theme-toggle" aria-label="Toggle theme">🌙 Dark <span class="dot"></span></button>
 
@@ -253,5 +259,6 @@
 </footer>
 
 <script src="script.js"></script>
+<script src="../transitions.js"></script>
 </body>
 </html>
