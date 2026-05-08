@@ -118,7 +118,7 @@ footer { color: var(--muted); font-size: .9rem; text-align: center; padding: 28p
 #theme-toggle {
   position: fixed;
   right: 16px;
-  top: 16px;
+  top: 48px;
   height: 36px;
   padding: 0 12px;
   display: inline-flex;
@@ -163,7 +163,7 @@ aside .section p { font-size: .9rem; color: var(--fg); margin-bottom: 10px; }
   header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 20px 12px 12px; }
   .brand-monogram { width: 44px; height: 44px; font-size: 1.3rem; }
   .container { padding: 12px; }
-  #theme-toggle { top: 8px; right: 8px; height: 30px; padding: 0 10px; }
+  #theme-toggle { top: 48px; right: 8px; height: 30px; padding: 0 10px; }
   .section { padding: 14px; }
   .pill { font-size: .75rem; }
 }
