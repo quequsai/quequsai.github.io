@@ -328,7 +328,7 @@
       root.setAttribute('data-theme', light ? 'light' : 'dark');
       localStorage.setItem('theme-udte', light ? 'light' : 'dark');
     };
-    apply(saved ? saved === 'light' : systemLight);
+    apply(saved ? saved === 'light' : false);
     window._applyTheme = apply;
   })();
 </script>
