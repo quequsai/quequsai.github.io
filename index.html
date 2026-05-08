@@ -72,7 +72,10 @@
       line-height: 1.15;
       margin-bottom: 14px;
       letter-spacing: -.01em;
+      text-wrap: balance;
+      text-shadow: 0 0 40px rgba(56,189,248,0.18), 0 0 80px rgba(56,189,248,0.08);
     }
+    [data-theme="light"] h1 { text-shadow: none; }
 
     .subtitle {
       font-family: 'JetBrains Mono', monospace;
@@ -98,13 +101,24 @@
       padding: 32px 28px;
       width: 280px;
       text-align: left;
-      transition: border-color .2s, background .2s;
+      transition: border-color .25s, background .25s, transform .25s, box-shadow .25s, opacity .45s, translate 0s;
       text-decoration: none;
       display: flex; flex-direction: column; gap: 12px;
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    .card.in {
+      opacity: 1;
+      transform: translateY(0);
     }
     .card:hover {
       border-color: var(--card-hover-border);
       background: var(--card-hover-bg);
+      transform: translateY(-5px);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+    }
+    [data-theme="light"] .card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
     }
 
     .card-icon { font-size: 28px; line-height: 1; }
@@ -316,6 +330,23 @@
     };
     apply(saved ? saved === 'light' : systemLight);
     window._applyTheme = apply;
+  })();
+</script>
+<script>
+  (function () {
+    var cards = document.querySelectorAll('.card');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    cards.forEach(function (card, i) {
+      card.style.transitionDelay = (i * 90) + 'ms';
+      io.observe(card);
+    });
   })();
 </script>
 <script src="sky.js"></script>
