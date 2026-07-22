@@ -24,11 +24,14 @@
       --hover-border: #1e3a5f; --hover-bg: rgba(255,255,255,0.05);
       --footer: #64748b; --accent: #38bdf8; --accent-2: #7dd3fc;
       --star: #fbbf24;                 /* the one warm accent: a star / the sun */
-      --lead: #d3dce8;                 /* brightened body copy for the hero */
+      --lead: #d8e0ea;                 /* brightened body copy for the hero */
       --ident: #7dd3fc;
-      --panel-bg: rgba(6,11,25,0.42);
-      --panel-bg-strong: rgba(6,11,25,0.60);
-      --panel-border: rgba(255,255,255,0.08);
+      --panel-bg: rgba(6,11,25,0.50);
+      --panel-bg-strong: rgba(6,11,25,0.68);
+      --panel-border: rgba(255,255,255,0.09);
+      --chip-bg: rgba(56,189,248,0.10);
+      --chip-bg-strong: rgba(56,189,248,0.22);
+      --chip-border: rgba(56,189,248,0.32);
     }
     [data-theme="light"] {
       --bg: #f8fafc; --fg: #475569; --heading: #0f172a; --muted: #475569;
@@ -37,10 +40,13 @@
       --footer: #475569; --accent: #0284c7; --accent-2: #38bdf8;
       --star: #d97706;
       --lead: #1e293b;
-      --ident: #0369a1;
-      --panel-bg: rgba(255,255,255,0.66);
-      --panel-bg-strong: rgba(255,255,255,0.82);
-      --panel-border: rgba(15,23,42,0.10);
+      --ident: #075985;
+      --panel-bg: rgba(255,255,255,0.92);
+      --panel-bg-strong: rgba(255,255,255,0.97);
+      --panel-border: rgba(15,23,42,0.12);
+      --chip-bg: rgba(2,132,199,0.09);
+      --chip-bg-strong: rgba(2,132,199,0.18);
+      --chip-border: rgba(2,132,199,0.30);
     }
     [data-theme="light"] #stars { opacity: 0; }
 
@@ -110,9 +116,37 @@
       font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase;
       color: var(--ident); font-weight: 700;
     }
+    .lead-wrap { position: relative; margin-top: 20px; }
     .lead {
-      margin-top: 20px; max-width: 52ch;
+      max-width: 54ch;
       font-size: 15px; line-height: 1.75; color: var(--lead); font-weight: 500;
+      clip-path: inset(0 100% 0 0);
+      animation: lead-reveal 1.5s cubic-bezier(.4,0,.2,1) .7s forwards;
+    }
+
+    /* meteor streaks across and reveals the tagline in its wake */
+    .meteor {
+      position: absolute; top: 5px; left: -12%;
+      width: 3px; height: 3px; border-radius: 50%;
+      background: #fff; box-shadow: 0 0 10px 3px rgba(180,220,255,0.9);
+      opacity: 0; pointer-events: none; z-index: 2;
+      animation: meteor-fly 1.5s ease-in .65s forwards;
+    }
+    .meteor::before {
+      content: ''; position: absolute; top: 50%; right: 3px;
+      width: 130px; height: 2px; transform: translateY(-50%);
+      background: linear-gradient(90deg, transparent, rgba(125,211,252,0.5), #fff);
+      border-radius: 2px;
+    }
+    @keyframes meteor-fly {
+      0%   { left: -12%; opacity: 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { left: 114%; opacity: 0; }
+    }
+    @keyframes lead-reveal {
+      from { clip-path: inset(0 100% 0 0); }
+      to   { clip-path: inset(0 0 0 0); }
     }
 
     /* ── ecliptic divider: the one signature flourish ── */
@@ -157,8 +191,14 @@
     .record:hover { background: var(--hover-bg); border-color: var(--hover-border); }
     .record:hover + .record { border-top-color: var(--hover-border); }
 
-    .rec-glyph { color: var(--accent); line-height: 0; }
-    .rec-glyph svg { width: 30px; height: 30px; display: block; }
+    .rec-glyph {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--chip-bg); border: 1px solid var(--chip-border);
+      color: var(--accent); transition: background .25s, border-color .25s;
+    }
+    .rec-glyph svg { width: 24px; height: 24px; display: block; }
+    .record:hover .rec-glyph { background: var(--chip-bg-strong); border-color: var(--accent); }
 
     .rec-desig {
       display: block; margin-bottom: 8px;
@@ -251,6 +291,8 @@
       *, ::before, ::after { animation-duration: .001ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
       .hero > *, .ecliptic, .records-head { opacity: 1 !important; }
       .record { opacity: 1 !important; transform: none !important; }
+      .lead { clip-path: none !important; }
+      .meteor { display: none !important; }
     }
   </style>
 </head>
@@ -265,7 +307,10 @@
     <p class="eyebrow"><span class="star"></span> Calgary, AB · 51.04°N 114.07°W</p>
     <h1>Qusai Quresh</h1>
     <p class="ident">Computer Science · University of Lethbridge · Epoch 2026.3</p>
-    <p class="lead">Computer science and mathematics, pointed at systems where the numbers have to hold up: orbital simulations checked against NASA ephemerides, optimisation solvers, and the software built around them.</p>
+    <div class="lead-wrap">
+      <span class="meteor" aria-hidden="true"></span>
+      <p class="lead">Computer science and mathematics for the problems where close enough isn&rsquo;t good enough. Physics simulations checked against real NASA data, optimisation solvers that prove their own bounds, and the software that makes them usable.</p>
+    </div>
   </section>
 
   <div class="ecliptic"><span class="dot"></span></div>
