@@ -6,27 +6,36 @@
   <meta name="description" content="Qusai Quresh — CS graduate and software developer. Portfolio, projects, and resume.">
   <title>Qusai Quresh</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%2300000f' stroke='%2338bdf8' stroke-width='1.5'/><text x='16' y='22' text-anchor='middle' font-family='monospace' font-weight='700' font-size='16' fill='%2338bdf8'>Q</text></svg>">
+  <script>
+    // Apply theme before first paint to avoid a flash (shared contract, default dark).
+    (function () {
+      var saved = localStorage.getItem('theme-udte');
+      document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
+    })();
+  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
     *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #00000f; --fg: #94a3b8; --heading: #f1f5f9;
-      --card-bg: rgba(255,255,255,0.025); --card-border: rgba(255,255,255,0.06);
-      --card-hover-border: #1e3a5f; --card-hover-bg: rgba(255,255,255,0.04);
-      --subtitle: #64748b; --footer: #1e293b; --accent: #38bdf8;
+      --bg: #00000f; --fg: #94a3b8; --heading: #f1f5f9; --muted: #475569;
+      --card-border: rgba(255,255,255,0.06);
+      --hover-border: #1e3a5f; --hover-bg: rgba(255,255,255,0.035);
+      --footer: #1e293b; --accent: #38bdf8; --accent-2: #7dd3fc;
+      --star: #fbbf24;                 /* the one warm accent: a star / the sun */
     }
     [data-theme="light"] {
-      --bg: #f8fafc; --fg: #475569; --heading: #0f172a;
-      --card-bg: #ffffff; --card-border: #e2e8f0;
-      --card-hover-border: #38bdf8; --card-hover-bg: #f0f9ff;
-      --subtitle: #94a3b8; --footer: #cbd5e1; --accent: #0284c7;
+      --bg: #f8fafc; --fg: #475569; --heading: #0f172a; --muted: #94a3b8;
+      --card-border: #e2e8f0;
+      --hover-border: #38bdf8; --hover-bg: #f0f9ff;
+      --footer: #94a3b8; --accent: #0284c7; --accent-2: #38bdf8;
+      --star: #d97706;
     }
     [data-theme="light"] #stars { opacity: 0; }
 
     html, body {
-      width: 100%; height: 100%;
+      width: 100%; min-height: 100%;
       background: var(--bg);
       color: var(--fg);
       font-family: 'Inter', sans-serif;
@@ -34,214 +43,180 @@
       transition: color .2s;
     }
 
+    /* ── background layers (driven by sky.js — keep ids/structure) ── */
     #sky-bg {
-      position: fixed; inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1.5s ease;
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0; transition: opacity 1.5s ease;
       background: linear-gradient(180deg,
         #0d1f5e 0%, #1a4fa0 30%, #2f80c8 60%, #7ec8e3 85%, #b8e0f0 100%);
     }
     [data-theme="light"] #sky-bg { opacity: 1; }
-
     #stars { position: fixed; inset: 0; pointer-events: none; z-index: 1; transition: opacity 1.5s ease; }
 
+    /* ── page shell (left-aligned editorial column) ── */
     .page {
       position: relative; z-index: 1;
       min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 60px 24px 80px;
-      text-align: center;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 128px 32px 72px;
+      display: flex; flex-direction: column; gap: 52px;
     }
 
-    .label {
+    /* ── hero ── */
+    .eyebrow {
+      display: flex; align-items: center; gap: 10px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: .2em;
+      font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 24px;
+    }
+    .eyebrow .star {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--star); box-shadow: 0 0 9px 1px var(--star); flex-shrink: 0;
+    }
+    .hero h1 {
+      font-size: clamp(2.7rem, 8.5vw, 5.2rem);
+      font-weight: 900; color: var(--heading);
+      line-height: 1.0; letter-spacing: -.038em; text-wrap: balance;
+      text-shadow: 0 0 46px rgba(56,189,248,0.18);
+    }
+    [data-theme="light"] .hero h1 { text-shadow: none; }
+    .ident {
+      margin-top: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
       color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 18px;
+    }
+    .lead {
+      margin-top: 24px; max-width: 54ch;
+      font-size: 15px; line-height: 1.78; color: var(--fg);
     }
 
-    h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 900;
-      color: var(--heading);
-      line-height: 1.15;
-      margin-bottom: 14px;
-      letter-spacing: -.01em;
-      text-wrap: balance;
-      text-shadow: 0 0 40px rgba(56,189,248,0.18), 0 0 80px rgba(56,189,248,0.08);
+    /* ── ecliptic divider: the one signature flourish ── */
+    .ecliptic { position: relative; height: 1px; background: var(--card-border); }
+    .ecliptic::before {
+      content: ''; position: absolute; left: 0; top: 0; height: 1px; width: 32%;
+      background: linear-gradient(90deg, var(--accent), transparent);
     }
-    [data-theme="light"] h1 { text-shadow: none; }
+    .ecliptic .dot {
+      position: absolute; left: 32%; top: 50%; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--star); transform: translate(-50%, -50%);
+      box-shadow: 0 0 11px 2px var(--star);
+    }
 
-    .subtitle {
+    /* ── destinations, as catalog records ── */
+    .records-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace; text-transform: uppercase;
+      letter-spacing: .2em; font-size: 10px; color: var(--muted); margin-bottom: 4px;
+    }
+    .records-head .count { color: var(--accent); }
+
+    .record {
+      display: grid; grid-template-columns: 46px 1fr auto;
+      align-items: center; gap: 22px;
+      padding: 24px 12px; text-decoration: none;
+      border-top: 1px solid var(--card-border);
+      transition: background .25s, border-color .25s, opacity .5s, transform .5s;
+      opacity: 0; transform: translateY(16px);       /* revealed by IntersectionObserver (.in) */
+    }
+    .records .record:last-child { border-bottom: 1px solid var(--card-border); }
+    .record.in { opacity: 1; transform: translateY(0); }
+    .record:hover { background: var(--hover-bg); border-color: var(--hover-border); }
+    .record:hover + .record { border-top-color: var(--hover-border); }
+
+    .rec-glyph { color: var(--accent); line-height: 0; }
+    .rec-glyph svg { width: 30px; height: 30px; display: block; }
+
+    .rec-desig {
+      display: block; margin-bottom: 8px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--subtitle);
-      letter-spacing: .1em;
-      margin-bottom: 56px;
+      font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
     }
-    .subtitle.accent { color: var(--accent); }
+    .rec-desig .id { color: var(--accent); }
+    .rec-title {
+      display: block; font-size: 1.18rem; font-weight: 700;
+      color: var(--heading); line-height: 1.25; letter-spacing: -.01em;
+    }
+    .rec-desc { margin-top: 6px; font-size: 13px; line-height: 1.6; color: var(--fg); max-width: 54ch; }
 
-    .cards {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-      max-width: 960px;
-      width: 100%;
+    .rec-go {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .08em;
+      color: var(--accent); white-space: nowrap; transition: transform .25s;
     }
+    .record:hover .rec-go { transform: translateX(5px); }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 32px 28px;
-      width: 280px;
-      text-align: left;
-      transition: border-color .25s, background .25s, transform .25s, box-shadow .25s, opacity .45s, translate 0s;
-      text-decoration: none;
-      display: flex; flex-direction: column; gap: 12px;
-      opacity: 0;
-      transform: translateY(18px);
-    }
-    .card.in {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .card:hover {
-      border-color: var(--card-hover-border);
-      background: var(--card-hover-bg);
-      transform: translateY(-5px);
-      box-shadow: 0 14px 36px rgba(0,0,0,0.45);
-    }
-    [data-theme="light"] .card:hover {
-      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-    }
-
-    .card-icon { color: var(--accent); line-height: 0; }
-    .card-icon svg { width: 30px; height: 30px; display: block; }
-
-    .card-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      letter-spacing: .18em;
-      color: var(--accent);
-      text-transform: uppercase;
-    }
-
-    .card h2 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--heading);
-      line-height: 1.3;
-    }
-
-    .card p {
-      font-size: 13px;
-      color: var(--fg);
-      line-height: 1.6;
-      flex-grow: 1;
-    }
-
-    .card-link {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      letter-spacing: .08em;
-      margin-top: 4px;
-    }
-
+    /* ── footer ── */
     footer {
-      position: relative; z-index: 1;
-      text-align: center;
-      padding: 0 0 40px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--footer);
-      letter-spacing: .08em;
+      position: relative; z-index: 1; padding: 4px 0 0;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--footer); letter-spacing: .08em;
     }
 
+    /* ── clouds + sun/moon widget (driven by sky.js — keep) ── */
     .sky-cloud {
-      position: fixed;
-      background: #fff;
-      border-radius: 50px;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0;
-      transition: opacity 1.2s ease;
+      position: fixed; background: #fff; border-radius: 50px;
+      pointer-events: none; z-index: 0; opacity: 0; transition: opacity 1.2s ease;
     }
     [data-theme="light"] .sky-cloud { opacity: 0.82; }
-
     #cloud-a { width:160px; height:40px; top:90px; right:200px; }
     #cloud-a::before,#cloud-a::after { content:''; position:absolute; background:#fff; border-radius:50%; }
     #cloud-a::before { width:80px; height:60px; top:-28px; left:20px; }
     #cloud-a::after  { width:60px; height:50px; top:-22px; left:70px; }
-
     #cloud-b { width:120px; height:32px; top:130px; right:420px; }
     #cloud-b::before,#cloud-b::after { content:''; position:absolute; background:#fff; border-radius:50%; }
     #cloud-b::before { width:60px; height:48px; top:-22px; left:14px; }
     #cloud-b::after  { width:50px; height:40px; top:-18px; left:54px; }
-
     #cloud-c { width:100px; height:28px; top:75px; right:520px; }
     #cloud-c::before,#cloud-c::after { content:''; position:absolute; background:#fff; border-radius:50%; }
     #cloud-c::before { width:50px; height:42px; top:-20px; left:10px; }
     #cloud-c::after  { width:40px; height:34px; top:-16px; left:46px; }
 
     #sky-body {
-      position: fixed; top: 20px; right: 20px;
-      width: 64px; height: 64px;
-      z-index: 9998; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      position: fixed; top: 20px; right: 20px; width: 64px; height: 64px;
+      z-index: 9998; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
     #sky-moon {
-      width: 42px; height: 42px;
-      background: #eef;
-      border-radius: 50%;
-      position: relative;
+      width: 42px; height: 42px; background: #eef; border-radius: 50%; position: relative;
       transition: background 1s ease, box-shadow 1s ease;
     }
     [data-theme="light"] #sky-moon {
       background: #F6D602;
       box-shadow: 0 0 20px 8px rgba(246,214,2,0.45), 0 0 6px 2px rgba(245,235,113,0.6);
     }
-    .moon-spot {
-      border-radius: 50%;
-      position: absolute;
-      background: #ccd;
-      transition: all 1s ease;
-    }
+    .moon-spot { border-radius: 50%; position: absolute; background: #ccd; transition: all 1s ease; }
     [data-theme="light"] .moon-spot { width: 0 !important; height: 0 !important; opacity: 0; }
     #moon-spot1 { width: 9px;  height: 9px;  top: 24px; left: 8px;  }
     #moon-spot2 { width: 5px;  height: 5px;  top: 26px; left: 20px; }
     #moon-cover {
-      width: 34px; height: 34px;
-      background: #00000f;
-      border-radius: 50%;
-      position: absolute;
-      top: -4px; left: 16px;
-      transition: transform 1s ease, opacity 1s ease;
+      width: 34px; height: 34px; background: #00000f; border-radius: 50%;
+      position: absolute; top: -4px; left: 16px; transition: transform 1s ease, opacity 1s ease;
     }
-    [data-theme="light"] #moon-cover {
-      transform: translateX(52px);
-      opacity: 0;
-    }
+    [data-theme="light"] #moon-cover { transform: translateX(52px); opacity: 0; }
 
-    /* Clouds + sun/moon widget use fixed right-offsets that only make sense
-       at desktop width; hide the decorative clouds on tablet and below so
-       they never clip off-screen or overlap the content. */
-    @media (max-width: 900px) {
-      .sky-cloud { display: none; }
-    }
+    /* ── entrance ── */
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    .hero > *, .ecliptic, .records-head { opacity: 0; animation: rise .7s ease forwards; }
+    .hero .eyebrow   { animation-delay: .05s; }
+    .hero h1         { animation-delay: .15s; }
+    .hero .ident     { animation-delay: .30s; }
+    .hero .lead      { animation-delay: .42s; }
+    .ecliptic        { animation-delay: .52s; }
+    .records-head    { animation-delay: .60s; }
 
+    /* ── responsive ── */
+    @media (max-width: 900px) { .sky-cloud { display: none; } }
     @media (max-width: 600px) {
-      .page { padding: 40px 16px 60px; }
-      .card { width: 100%; }
-      .subtitle { letter-spacing: .04em; font-size: 10px; }
-      #sky-body { top: 14px; right: 14px; width: 52px; height: 52px; }
+      .page { padding: 92px 20px 60px; gap: 40px; }
+      .record { grid-template-columns: 1fr auto; gap: 14px; padding: 20px 2px; }
+      .rec-glyph { display: none; }
+      .rec-go { align-self: start; padding-top: 2px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after { animation-duration: .001ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+      .hero > *, .ecliptic, .records-head { opacity: 1 !important; }
+      .record { opacity: 1 !important; transform: none !important; }
     }
   </style>
 </head>
@@ -250,58 +225,75 @@
 <div id="sky-bg"></div>
 <canvas id="stars"></canvas>
 
-<div class="page">
-  <div class="label">Computer Science &nbsp;·&nbsp; University of Lethbridge</div>
-  <h1>Qusai Quresh</h1>
-  <div class="subtitle accent">CALGARY, AB &nbsp;·&nbsp; APRIL 2026</div>
+<main class="page">
 
-  <div class="cards">
+  <section class="hero">
+    <p class="eyebrow"><span class="star"></span> Calgary, AB · 51.04°N 114.07°W</p>
+    <h1>Qusai Quresh</h1>
+    <p class="ident">Computer Science · University of Lethbridge · Epoch 2026.3</p>
+    <p class="lead">Computer science and mathematics, pointed at systems where the numbers have to hold up: orbital simulations checked against NASA ephemerides, optimisation solvers, and the software built around them.</p>
+  </section>
 
-    <a class="card" href="./resume/">
-      <div class="card-icon">
+  <div class="ecliptic"><span class="dot"></span></div>
+
+  <section class="records" aria-label="Destinations">
+    <div class="records-head">
+      <span>Destinations</span>
+      <span class="count">03</span>
+    </div>
+
+    <a class="card record" href="./resume/">
+      <span class="rec-glyph">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
           <path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/>
         </svg>
-      </div>
-      <div class="card-tag">Portfolio</div>
-      <h2>Resume &amp; Portfolio</h2>
-      <p>Experience, skills, and education. IT support, requirements gathering, reporting and analytics, and full-stack web development.</p>
-      <div class="card-link">VIEW &rarr;</div>
+      </span>
+      <span class="rec-main">
+        <span class="rec-desig"><span class="id">CV</span> · Portfolio</span>
+        <span class="rec-title">Resume &amp; Portfolio</span>
+        <span class="rec-desc">Experience, skills, education, and the full project history in one place.</span>
+      </span>
+      <span class="rec-go">OPEN &rarr;</span>
     </a>
 
-    <a class="card" href="https://quequsai.github.io/UDTE/">
-      <div class="card-icon">
+    <a class="card record" href="https://quequsai.github.io/UDTE/">
+      <span class="rec-glyph">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/>
           <ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-24 12 12)"/>
           <circle cx="20.4" cy="8.2" r="1.4" fill="currentColor" stroke="none"/>
         </svg>
-      </div>
-      <div class="card-tag">Independent Study</div>
-      <h2>Universal Digital Twin Engine</h2>
-      <p>CPSC 4990 — orbital physics simulations with light-delayed gravity, leapfrog integration, and real NASA JPL Horizons data.</p>
-      <div class="card-link">LAUNCH &rarr;</div>
+      </span>
+      <span class="rec-main">
+        <span class="rec-desig"><span class="id">UDTE</span> · Independent Study</span>
+        <span class="rec-title">Universal Digital Twin Engine</span>
+        <span class="rec-desc">Orbital physics with light-delayed gravity and leapfrog integration, on real NASA JPL Horizons data.</span>
+      </span>
+      <span class="rec-go">LAUNCH &rarr;</span>
     </a>
 
-    <a class="card" href="./adam/">
-      <div class="card-icon">
+    <a class="card record" href="./adam/">
+      <span class="rec-glyph">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 4v16h16"/>
           <path d="M7 8c2.2 8 7.4 8 9.6 2.4"/>
           <circle cx="16.6" cy="10.4" r="1.5" fill="currentColor" stroke="none"/>
         </svg>
-      </div>
-      <div class="card-tag">Numerical Optimisation</div>
-      <h2>Adam Optimizer Analysis</h2>
-      <p>Deep dive into adaptive gradient descent — theory, convergence proofs, 5 experiments, and PyTorch validation across quadratic, logistic, and neural network benchmarks.</p>
-      <div class="card-link">EXPLORE &rarr;</div>
+      </span>
+      <span class="rec-main">
+        <span class="rec-desig"><span class="id">ADAM</span> · Numerical Optimisation</span>
+        <span class="rec-title">Adam Optimizer Analysis</span>
+        <span class="rec-desc">Adaptive gradient descent from first principles: theory, convergence, and PyTorch experiments.</span>
+      </span>
+      <span class="rec-go">EXPLORE &rarr;</span>
     </a>
 
-  </div>
-</div>
+  </section>
 
-<footer>QUSAI QURESH &nbsp;·&nbsp; QUEQUSAI.GITHUB.IO &nbsp;·&nbsp; <span id="year">2026</span></footer>
+  <footer>QUSAI QURESH &nbsp;·&nbsp; QUEQUSAI.GITHUB.IO &nbsp;·&nbsp; <span id="year">2026</span></footer>
+
+</main>
 
 <div class="sky-cloud" id="cloud-a"></div>
 <div class="sky-cloud" id="cloud-b"></div>
@@ -353,7 +345,6 @@
   (function(){
     var root = document.documentElement;
     var saved = localStorage.getItem('theme-udte');
-    var systemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
     var apply = function(light) {
       root.setAttribute('data-theme', light ? 'light' : 'dark');
       localStorage.setItem('theme-udte', light ? 'light' : 'dark');
