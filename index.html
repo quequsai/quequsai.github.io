@@ -26,9 +26,11 @@
       --star: #fbbf24;                 /* the one warm accent: a star / the sun */
       --lead: #d8e0ea;                 /* brightened body copy for the hero */
       --ident: #7dd3fc;
-      --panel-bg: rgba(6,11,25,0.50);
-      --panel-bg-strong: rgba(6,11,25,0.68);
-      --panel-border: rgba(255,255,255,0.09);
+      --panel-bg: rgba(6,11,25,0.30);
+      --panel-bg-strong: rgba(6,11,25,0.44);
+      --panel-border: rgba(255,255,255,0.10);
+      --panel-filter: blur(16px) saturate(1.12);
+      --panel-highlight: inset 0 1px 0 rgba(255,255,255,0.10);
       --chip-bg: rgba(56,189,248,0.10);
       --chip-bg-strong: rgba(56,189,248,0.22);
       --chip-border: rgba(56,189,248,0.32);
@@ -41,9 +43,11 @@
       --star: #d97706;
       --lead: #1e293b;
       --ident: #075985;
-      --panel-bg: rgba(255,255,255,0.92);
-      --panel-bg-strong: rgba(255,255,255,0.97);
-      --panel-border: rgba(15,23,42,0.12);
+      --panel-bg: rgba(255,255,255,0.55);
+      --panel-bg-strong: rgba(255,255,255,0.70);
+      --panel-border: rgba(255,255,255,0.55);
+      --panel-filter: blur(16px) saturate(1.05) brightness(1.14);
+      --panel-highlight: inset 0 1px 0 rgba(255,255,255,0.65);
       --chip-bg: rgba(2,132,199,0.09);
       --chip-bg-strong: rgba(2,132,199,0.18);
       --chip-border: rgba(2,132,199,0.30);
@@ -87,8 +91,9 @@
       border-radius: 20px;
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
-      -webkit-backdrop-filter: blur(10px) saturate(1.05);
-      backdrop-filter: blur(10px) saturate(1.05);
+      -webkit-backdrop-filter: var(--panel-filter);
+      backdrop-filter: var(--panel-filter);
+      box-shadow: var(--panel-highlight);
       transition: background .25s ease, border-color .25s ease;
     }
     .hero:hover { background: var(--panel-bg-strong); }
@@ -168,8 +173,9 @@
       border-radius: 20px;
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
-      -webkit-backdrop-filter: blur(10px) saturate(1.05);
-      backdrop-filter: blur(10px) saturate(1.05);
+      -webkit-backdrop-filter: var(--panel-filter);
+      backdrop-filter: var(--panel-filter);
+      box-shadow: var(--panel-highlight);
     }
     .records-head {
       display: flex; align-items: baseline; justify-content: space-between;
