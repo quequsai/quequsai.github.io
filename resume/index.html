@@ -6,6 +6,13 @@
   <meta name="description" content="Portfolio & resume of Qusai Quresh, CS graduate, full-stack developer, and systems programmer." />
   <title>Qusai Quresh | Resume & Portfolio</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%2300000f' stroke='%2338bdf8' stroke-width='1.5'/><text x='16' y='22' text-anchor='middle' font-family='monospace' font-weight='700' font-size='16' fill='%2338bdf8'>Q</text></svg>">
+  <script>
+    // Apply theme before first paint to avoid a flash (shared contract, default dark).
+    (function () {
+      var saved = localStorage.getItem('theme-udte');
+      document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
   <script type="application/ld+json">
   {
@@ -28,13 +35,23 @@
 </head>
 <body data-page="resume" style="padding-top:40px;">
 
-<nav style="position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:40px;display:flex;align-items:center;gap:24px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;transition:background .2s,border-color .2s;">
-  <a href="../" style="color:var(--muted);text-decoration:none;font-weight:700;">QUSAI QURESH</a>
-  <span style="color:var(--border-strong);">|</span>
-  <a href="./" style="color:var(--accent);text-decoration:none;font-weight:700;">RESUME</a>
+<nav class="site-nav">
+  <a href="../">QUSAI QURESH</a>
+  <span class="sep">|</span>
+  <a href="./" class="active">RESUME</a>
 </nav>
 
-<button id="theme-toggle" aria-label="Toggle theme">🌙 Dark <span class="dot"></span></button>
+<div class="floating-controls">
+  <button id="theme-toggle" aria-label="Toggle theme">☀️ Light <span class="dot"></span></button>
+  <div id="print-controls">
+    <button id="print-btn" aria-haspopup="true" aria-expanded="false">⬇ PDF</button>
+    <div id="print-menu" hidden>
+      <span class="print-menu-label">Save / print as</span>
+      <button type="button" data-print-theme="light">☀️ Light</button>
+      <button type="button" data-print-theme="dark">🌙 Dark</button>
+    </div>
+  </div>
+</div>
 
 <header class="container fade-in">
   <span class="brand-monogram">QQ</span>
@@ -259,10 +276,8 @@
 </main>
 
 <footer class="container">
-  <footer class="footer">
-    &copy; 2026 Qusai Quresh &nbsp;·&nbsp; Calgary, AB &nbsp;·&nbsp;
-    <a href="https://quequsai.github.io">quequsai.github.io</a>
-  </footer>
+  &copy; <span id="year">2026</span> Qusai Quresh &nbsp;·&nbsp; Calgary, AB &nbsp;·&nbsp;
+  <a href="https://quequsai.github.io">quequsai.github.io</a>
 </footer>
 
 <script src="script.js"></script>

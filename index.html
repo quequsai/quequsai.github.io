@@ -84,6 +84,7 @@
       letter-spacing: .1em;
       margin-bottom: 56px;
     }
+    .subtitle.accent { color: var(--accent); }
 
     .cards {
       display: flex;
@@ -121,7 +122,8 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.10);
     }
 
-    .card-icon { font-size: 28px; line-height: 1; }
+    .card-icon { color: var(--accent); line-height: 0; }
+    .card-icon svg { width: 30px; height: 30px; display: block; }
 
     .card-tag {
       font-family: 'JetBrains Mono', monospace;
@@ -228,10 +230,18 @@
       opacity: 0;
     }
 
+    /* Clouds + sun/moon widget use fixed right-offsets that only make sense
+       at desktop width; hide the decorative clouds on tablet and below so
+       they never clip off-screen or overlap the content. */
+    @media (max-width: 900px) {
+      .sky-cloud { display: none; }
+    }
+
     @media (max-width: 600px) {
       .page { padding: 40px 16px 60px; }
       .card { width: 100%; }
       .subtitle { letter-spacing: .04em; font-size: 10px; }
+      #sky-body { top: 14px; right: 14px; width: 52px; height: 52px; }
     }
   </style>
 </head>
@@ -243,12 +253,17 @@
 <div class="page">
   <div class="label">Computer Science &nbsp;·&nbsp; University of Lethbridge</div>
   <h1>Qusai Quresh</h1>
-  <div class="subtitle" style="color:var(--accent);">CALGARY, AB &nbsp;·&nbsp; APRIL 2026</div>
+  <div class="subtitle accent">CALGARY, AB &nbsp;·&nbsp; APRIL 2026</div>
 
   <div class="cards">
 
     <a class="card" href="./resume/">
-      <div class="card-icon">&#128196;</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+          <path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/>
+        </svg>
+      </div>
       <div class="card-tag">Portfolio</div>
       <h2>Resume &amp; Portfolio</h2>
       <p>Experience, skills, and education. IT support, requirements gathering, reporting and analytics, and full-stack web development.</p>
@@ -256,7 +271,13 @@
     </a>
 
     <a class="card" href="https://quequsai.github.io/UDTE/">
-      <div class="card-icon">&#9728;</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/>
+          <ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-24 12 12)"/>
+          <circle cx="20.4" cy="8.2" r="1.4" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
       <div class="card-tag">Independent Study</div>
       <h2>Universal Digital Twin Engine</h2>
       <p>CPSC 4990 — orbital physics simulations with light-delayed gravity, leapfrog integration, and real NASA JPL Horizons data.</p>
@@ -264,7 +285,13 @@
     </a>
 
     <a class="card" href="./adam/">
-      <div class="card-icon">&#8711;</div>
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 4v16h16"/>
+          <path d="M7 8c2.2 8 7.4 8 9.6 2.4"/>
+          <circle cx="16.6" cy="10.4" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
       <div class="card-tag">Numerical Optimisation</div>
       <h2>Adam Optimizer Analysis</h2>
       <p>Deep dive into adaptive gradient descent — theory, convergence proofs, 5 experiments, and PyTorch validation across quadratic, logistic, and neural network benchmarks.</p>
@@ -274,7 +301,7 @@
   </div>
 </div>
 
-<footer>QUSAI QURESH &nbsp;·&nbsp; QUEQUSAI.GITHUB.IO &nbsp;·&nbsp; 2026</footer>
+<footer>QUSAI QURESH &nbsp;·&nbsp; QUEQUSAI.GITHUB.IO &nbsp;·&nbsp; <span id="year">2026</span></footer>
 
 <div class="sky-cloud" id="cloud-a"></div>
 <div class="sky-cloud" id="cloud-b"></div>
@@ -318,6 +345,9 @@
 
   window.addEventListener('resize', resize);
   resize();
+
+  var yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 </script>
 <script>
   (function(){

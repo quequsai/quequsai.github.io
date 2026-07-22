@@ -1,23 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
-/* ── Theme Variables ── */
+/* ── Theme Variables ──
+   Shared contract across the quequsai.github.io origin:
+   default = dark (deep space); [data-theme="light"] on <html> opts into light.
+   localStorage key: theme-udte. */
 :root {
-  /* Light mode: clean slate */
-  --bg: #f8fafc;
-  --fg: #0f172a;
-  --muted: #64748b;
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --accent: #0284c7;
-  --accent-2: #38bdf8;
-  --heading: #0f172a;
-  --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  --text-muted: #64748b;
-}
-
-.theme-dark {
-  /* Dark mode: deep space */
+  /* Dark (default) */
   --bg: #00000f;
   --fg: #94a3b8;
   --muted: #475569;
@@ -29,6 +17,27 @@
   --heading: #f1f5f9;
   --shadow: 0 4px 24px rgba(0,0,0,0.5);
   --text-muted: #475569;
+  --nav-bg: rgba(2,6,23,0.97);
+  --nav-border: #0f2744;
+  --menu-hover: rgba(56,189,248,0.10);
+}
+
+[data-theme="light"] {
+  /* Light */
+  --bg: #f8fafc;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --accent: #0284c7;
+  --accent-2: #38bdf8;
+  --heading: #0f172a;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --text-muted: #64748b;
+  --nav-bg: rgba(255,255,255,0.95);
+  --nav-border: #e2e8f0;
+  --menu-hover: rgba(2,132,199,0.08);
 }
 
 /* ── Base ── */
@@ -52,7 +61,7 @@ header { padding: 32px 20px 16px; }
 
 h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: -.01em; }
 h1 { font-size: 2.25rem; margin: 0; color: var(--heading); font-weight: 900; }
-.subtitle { color: var(--muted); margin-top: 6px; font-size: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .06em; }
+.subtitle { color: var(--muted); margin-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .06em; }
 
 /* Accent rule */
 .rule { height: 3px; width: 100%; background: linear-gradient(90deg, var(--accent-2), transparent); border-radius: 2px; margin: 14px 0 10px; }
@@ -67,8 +76,8 @@ h1 { font-size: 2.25rem; margin: 0; color: var(--heading); font-weight: 900; }
   margin: 14px 0;
   transition: background .2s, border-color .2s;
 }
-.section h2 { font-size: 1.05rem; color: var(--accent); margin: 0 0 10px; letter-spacing: .04em; text-transform: uppercase; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
-.meta { color: var(--muted); font-size: .9rem; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .04em; margin-bottom: 6px; }
+.section h2 { color: var(--accent); margin: 0 0 10px; letter-spacing: .04em; text-transform: uppercase; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+.meta { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .04em; margin-bottom: 6px; }
 ul { margin: 6px 0 6px 1.1rem; padding: 0; }
 li { margin: 3px 0; font-size: .95rem; }
 article h3 { font-size: 1rem; color: var(--heading); margin: 12px 0 2px; }
@@ -92,7 +101,7 @@ article h3 { font-size: 1rem; color: var(--heading); margin: 12px 0 2px; }
 @media (min-width: 820px) { .grid { grid-template-columns: 2fr 1fr; } }
 
 /* Footer */
-footer { color: var(--muted); font-size: .9rem; text-align: center; padding: 28px 20px 40px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .06em; }
+footer { color: var(--muted); text-align: center; padding: 28px 20px 40px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .06em; }
 
 /* ── Brand Monogram ── */
 .brand-monogram {
@@ -114,16 +123,31 @@ footer { color: var(--muted); font-size: .9rem; text-align: center; padding: 28p
   letter-spacing: -.04em;
 }
 
-/* ── Theme Toggle Button ── */
-#theme-toggle {
-  position: fixed;
-  right: 16px;
-  top: 48px;
-  height: 36px;
-  padding: 0 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+/* ── Top nav (shared visual language with the UDTE site) ── */
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  padding: 0 20px; height: 40px;
+  display: flex; align-items: center; gap: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: .08em;
+  backdrop-filter: blur(8px);
+  transition: background .2s, border-color .2s;
+}
+.site-nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+.site-nav a:hover { text-decoration: none; color: var(--accent); }
+.site-nav a.active { color: var(--accent); }
+.site-nav .sep { color: var(--border-strong); }
+
+/* ── Floating controls (theme toggle + print/save) ── */
+.floating-controls {
+  position: fixed; top: 48px; right: 16px; z-index: 1000;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+#theme-toggle, #print-btn {
+  height: 36px; padding: 0 12px;
+  display: inline-flex; align-items: center; gap: 8px;
   border-radius: 8px;
   border: 1px solid var(--border-strong);
   background: var(--surface);
@@ -131,17 +155,41 @@ footer { color: var(--muted); font-size: .9rem; text-align: center; padding: 28p
   cursor: pointer;
   box-shadow: var(--shadow);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: .06em;
-  font-weight: 700;
+  font-size: 10px; letter-spacing: .06em; font-weight: 700;
   transition: transform .08s ease, background .2s ease, color .2s ease, border-color .2s ease;
-  z-index: 1000;
 }
-#theme-toggle:hover { transform: translateY(-1px); }
+#theme-toggle:hover, #print-btn:hover { transform: translateY(-1px); border-color: var(--accent); }
 #theme-toggle .dot {
   display: inline-block; width: 7px; height: 7px; border-radius: 50%;
   background: var(--accent-2);
 }
+
+/* ── Print / save menu ── */
+#print-controls { position: relative; }
+#print-menu {
+  position: absolute; top: 42px; right: 0; min-width: 158px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+#print-menu[hidden] { display: none; }
+.print-menu-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); padding: 4px 8px 4px;
+}
+#print-menu button {
+  text-align: left; padding: 8px 10px; border-radius: 6px;
+  border: 1px solid transparent; background: transparent; color: var(--fg);
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+  transition: background .15s, color .15s, border-color .15s;
+}
+#print-menu button:hover { background: var(--menu-hover); border-color: var(--border); color: var(--accent); }
 
 /* ── Fade-in animation ── */
 .fade-in { opacity: 0; transform: translateY(8px); transition: opacity .6s ease, transform .6s ease; }
@@ -163,7 +211,33 @@ aside .section p { font-size: .9rem; color: var(--fg); margin-bottom: 10px; }
   header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 20px 12px 12px; }
   .brand-monogram { width: 44px; height: 44px; font-size: 1.3rem; }
   .container { padding: 12px; }
-  #theme-toggle { top: 48px; right: 8px; height: 30px; padding: 0 10px; }
+  .floating-controls { top: 48px; right: 8px; gap: 6px; }
+  #theme-toggle, #print-btn { height: 30px; padding: 0 10px; }
   .section { padding: 14px; }
   .pill { font-size: .75rem; }
+}
+
+/* ── Print / PDF ──
+   Respects whichever theme is active when print() is called (the Save/print
+   menu sets it), so the PDF can be light OR dark. print-color-adjust:exact
+   makes the dark background actually render. The .fade-in override is the key
+   fix for the "giant blank gap" bug: reveal-on-scroll sections stay opacity:0
+   until observed, so without this they print invisible but still take space. */
+@media print {
+  .fade-in { opacity: 1 !important; transform: none !important; }
+  .site-nav, .floating-controls { display: none !important; }
+  body {
+    padding-top: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .container { max-width: none; padding: 0 6px; }
+  header { padding: 0 6px 8px; }
+  .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+  .section {
+    box-shadow: none; padding: 10px 12px; margin: 8px 0;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  article { break-inside: avoid; page-break-inside: avoid; }
+  @page { margin: 12mm; }
 }
