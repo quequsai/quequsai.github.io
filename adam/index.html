@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adam Optimizer Analysis | Qusai Quresh</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%2300000f' stroke='%2338bdf8' stroke-width='1.5'/><text x='16' y='22' text-anchor='middle' font-family='monospace' font-weight='700' font-size='16' fill='%2338bdf8'>Q</text></svg>">
+  <script>
+    // Apply theme before first paint to avoid a flash (shared contract, default dark).
+    (function () {
+      var saved = localStorage.getItem('theme-udte');
+      document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
+    })();
+  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
@@ -26,7 +33,7 @@
       border-bottom: 1px solid #0f2744;
       padding: 0 20px; height: 40px;
       display: flex; align-items: center; gap: 32px;
-      font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: .08em;
+      font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: .08em;
       overflow-x: auto;
     }
     nav > * { flex-shrink: 0; }
@@ -45,7 +52,7 @@
     .proj-header {
       margin-bottom: 56px;
       padding-bottom: 32px;
-      border-bottom: 1px solid #0f2744;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .proj-label {
       font-family: 'JetBrains Mono', monospace;
@@ -79,7 +86,7 @@
       margin-top: 56px;
       margin-bottom: 16px;
       padding-bottom: 8px;
-      border-bottom: 1px solid #0f2744;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     h3 {
       font-size: 1rem;
@@ -90,7 +97,7 @@
     }
     p { margin-bottom: 16px; color: #94a3b8; }
     strong { color: #e2e8f0; font-weight: 600; }
-    hr { border: none; border-top: 1px solid #0f2744; margin: 40px 0; }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 40px 0; }
 
     /* ── code ── */
     code {
@@ -103,7 +110,7 @@
     }
     pre {
       background: #060d1a;
-      border: 1px solid #0f2744;
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 8px;
       padding: 18px 20px;
       overflow-x: auto;
@@ -118,7 +125,7 @@
     .fig img {
       width: 100%;
       border-radius: 8px;
-      border: 1px solid #0f2744;
+      border: 1px solid rgba(255,255,255,0.06);
       display: block;
     }
     .fig figcaption {
@@ -287,7 +294,7 @@
 
   <hr>
 
-  <h2>Why Adam? The Two Problems It Solves</h2>
+  <h2>Why Adam? The Three Problems It Solves</h2>
 
   <p>Vanilla stochastic gradient descent has two fundamental limitations that make it impractical for modern machine learning:</p>
 
@@ -563,7 +570,6 @@ v̂_t  = v_t  / (1 - β₂ᵗ)                        # bias-corrected variance
     const root = document.documentElement;
     const btn = document.getElementById('theme-btn');
     const saved = localStorage.getItem('theme-udte');
-    const systemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
     const apply = (light) => {
       root.setAttribute('data-theme', light ? 'light' : 'dark');
       btn.textContent = light ? '◑' : '◐';
@@ -572,7 +578,7 @@ v̂_t  = v_t  / (1 - β₂ᵗ)                        # bias-corrected variance
       btn.style.borderColor = light ? '#e2e8f0' : 'rgba(255,255,255,0.1)';
       localStorage.setItem('theme-udte', light ? 'light' : 'dark');
     };
-    apply(saved ? saved === 'light' : systemLight);
+    apply(saved ? saved === 'light' : false);
     btn.addEventListener('click', () => apply(root.getAttribute('data-theme') !== 'light'));
   })();
 </script>

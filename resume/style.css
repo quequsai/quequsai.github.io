@@ -1,7 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
-/* ── Theme Variables ── */
+/* ── Theme Variables ──
+   Shared contract across the whole quequsai.github.io origin:
+   default = dark (deep space); [data-theme="light"] on <html> opts into light.
+   localStorage key: theme-udte. */
 :root {
+  /* Dark mode: deep space (default) */
+  --bg: #00000f;
+  --fg: #94a3b8;
+  --muted: #475569;
+  --surface: rgba(255,255,255,0.025);
+  --border: rgba(255,255,255,0.06);
+  --border-strong: rgba(255,255,255,0.1);
+  --accent: #38bdf8;
+  --accent-2: #7dd3fc;
+  --heading: #f1f5f9;
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --text-muted: #475569;
+  --nav-bg: rgba(2,6,23,0.97);
+  --nav-border: #0f2744;
+}
+
+[data-theme="light"] {
   /* Light mode: clean slate */
   --bg: #f8fafc;
   --fg: #0f172a;
@@ -14,21 +34,8 @@
   --heading: #0f172a;
   --shadow: 0 2px 12px rgba(0,0,0,0.08);
   --text-muted: #64748b;
-}
-
-.theme-dark {
-  /* Dark mode: deep space */
-  --bg: #00000f;
-  --fg: #94a3b8;
-  --muted: #475569;
-  --surface: rgba(255,255,255,0.025);
-  --border: rgba(255,255,255,0.06);
-  --border-strong: rgba(255,255,255,0.1);
-  --accent: #38bdf8;
-  --accent-2: #7dd3fc;
-  --heading: #f1f5f9;
-  --shadow: 0 4px 24px rgba(0,0,0,0.5);
-  --text-muted: #475569;
+  --nav-bg: rgba(255,255,255,0.95);
+  --nav-border: #e2e8f0;
 }
 
 /* ── Base ── */
@@ -52,7 +59,7 @@ header { padding: 32px 20px 16px; }
 
 h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: -.01em; }
 h1 { font-size: 2.25rem; margin: 0; color: var(--heading); font-weight: 900; }
-.subtitle { color: var(--muted); margin-top: 6px; font-size: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .06em; }
+.subtitle { color: var(--muted); margin-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .06em; }
 
 /* Accent rule */
 .rule { height: 3px; width: 100%; background: linear-gradient(90deg, var(--accent-2), transparent); border-radius: 2px; margin: 14px 0 10px; }
@@ -67,8 +74,8 @@ h1 { font-size: 2.25rem; margin: 0; color: var(--heading); font-weight: 900; }
   margin: 14px 0;
   transition: background .2s, border-color .2s;
 }
-.section h2 { font-size: 1.05rem; color: var(--accent); margin: 0 0 10px; letter-spacing: .04em; text-transform: uppercase; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
-.meta { color: var(--muted); font-size: .9rem; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .04em; margin-bottom: 6px; }
+.section h2 { color: var(--accent); margin: 0 0 10px; letter-spacing: .04em; text-transform: uppercase; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+.meta { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .04em; margin-bottom: 6px; }
 ul { margin: 6px 0 6px 1.1rem; padding: 0; }
 li { margin: 3px 0; font-size: .95rem; }
 article h3 { font-size: 1rem; color: var(--heading); margin: 12px 0 2px; }
@@ -92,7 +99,7 @@ article h3 { font-size: 1rem; color: var(--heading); margin: 12px 0 2px; }
 @media (min-width: 820px) { .grid { grid-template-columns: 2fr 1fr; } }
 
 /* Footer */
-footer { color: var(--muted); font-size: .9rem; text-align: center; padding: 28px 20px 40px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .06em; }
+footer { color: var(--muted); text-align: center; padding: 28px 20px 40px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .06em; }
 
 /* ── Brand Monogram ── */
 .brand-monogram {
@@ -156,6 +163,41 @@ aside .section p { font-size: .9rem; color: var(--fg); margin-bottom: 10px; }
 .contact-list { list-style: none; margin: 6px 0; padding: 0; }
 .contact-list li { font-size: .9rem; margin: 5px 0; }
 
+/* ── Top nav (shared visual language with the UDTE site) ── */
+.site-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  padding: 0 20px; height: 40px;
+  display: flex; align-items: center; gap: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: .08em;
+  backdrop-filter: blur(8px);
+  transition: background .2s, border-color .2s;
+}
+.site-nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+.site-nav a:hover { text-decoration: none; color: var(--accent); }
+.site-nav a.active { color: var(--accent); }
+.site-nav .sep { color: var(--border-strong); }
+
+/* ── Download / print button ── */
+#download-pdf {
+  position: fixed; right: 16px; top: 90px;
+  height: 36px; padding: 0 14px;
+  display: inline-flex; align-items: center; gap: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .06em; font-weight: 700;
+  transition: transform .08s ease, background .2s ease, border-color .2s ease;
+  z-index: 1000;
+}
+#download-pdf:hover { transform: translateY(-1px); border-color: var(--accent); }
+
 /* ── Mobile ── */
 @media (max-width: 640px) {
   h1 { font-size: 1.6rem; }
@@ -164,6 +206,30 @@ aside .section p { font-size: .9rem; color: var(--fg); margin-bottom: 10px; }
   .brand-monogram { width: 44px; height: 44px; font-size: 1.3rem; }
   .container { padding: 12px; }
   #theme-toggle { top: 48px; right: 8px; height: 30px; padding: 0 10px; }
+  #download-pdf { top: 90px; right: 8px; height: 30px; padding: 0 10px; }
   .section { padding: 14px; }
   .pill { font-size: .75rem; }
+}
+
+/* ── Print / PDF ── force a clean light single-column résumé ── */
+@media print {
+  :root {
+    --bg: #ffffff; --fg: #1e293b; --muted: #475569;
+    --surface: #ffffff; --border: #cbd5e1; --border-strong: #cbd5e1;
+    --accent: #0369a1; --accent-2: #0284c7; --heading: #0f172a;
+    --shadow: none;
+  }
+  .site-nav, #theme-toggle, #download-pdf { display: none !important; }
+  body { padding-top: 0 !important; background: #fff; }
+  .container { max-width: none; padding: 0 8px; }
+  header { padding: 0 8px 8px; }
+  .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+  .section {
+    box-shadow: none; border: 1px solid #e2e8f0; padding: 10px 12px; margin: 8px 0;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  article { break-inside: avoid; page-break-inside: avoid; }
+  .fade-in { opacity: 1 !important; transform: none !important; }
+  a { color: var(--accent); text-decoration: none; }
+  @page { margin: 12mm; }
 }
