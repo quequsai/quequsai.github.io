@@ -1,25 +1,34 @@
-// Theme toggle + fade-in animation (keeps your existing fade-in behavior)
+// Theme toggle (shared contract: data-theme on <html>, default dark, key theme-udte)
+// + fade-in on scroll + print/download button.
 (function () {
-  const body = document.body;
+  const root = document.documentElement;
   const btn = document.getElementById('theme-toggle');
 
-  // Initialize mode from localStorage or prefers-color-scheme
-  const preferred = localStorage.getItem('theme-udte');
-  const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const startDark = preferred ? preferred === 'dark' : systemDark;
+  const isLight = () => root.getAttribute('data-theme') === 'light';
 
-  const apply = (dark) => {
-    body.classList.toggle('theme-dark', dark);
-    btn.setAttribute('aria-pressed', String(dark));
-    btn.innerHTML = dark ? '☀️ Light <span class="dot"></span>' : '🌙 Dark <span class="dot"></span>';
-    localStorage.setItem('theme-udte', dark ? 'dark' : 'light');
+  const apply = (light) => {
+    root.setAttribute('data-theme', light ? 'light' : 'dark');
+    localStorage.setItem('theme-udte', light ? 'light' : 'dark');
+    if (btn) {
+      btn.setAttribute('aria-pressed', String(!light));
+      btn.innerHTML = light
+        ? '🌙 Dark <span class="dot"></span>'
+        : '☀️ Light <span class="dot"></span>';
+    }
   };
 
-  apply(startDark);
+  // Sync the button label to whatever the early inline script already set.
+  apply(isLight());
 
-  btn.addEventListener('click', () => {
-    apply(!body.classList.contains('theme-dark'));
-  });
+  if (btn) btn.addEventListener('click', () => apply(!isLight()));
+
+  // Download / print button
+  const dl = document.getElementById('download-pdf');
+  if (dl) dl.addEventListener('click', () => window.print());
+
+  // Keep footer year current
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   // Fade-in on scroll
   const faders = document.querySelectorAll('.fade-in');
@@ -32,4 +41,3 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
   faders.forEach(el => io.observe(el));
 })();
-// Test
